@@ -314,6 +314,12 @@ window_vars(user) }}
   hint="Describe your task "
 ></q-input>
  
+ <q-checkbox
+  v-model="tasksFormDialog.data.public_assigning"
+  label="Public Assigning (allow users to assign themselves tasks on public page)"
+  hint=""
+></q-checkbox>
+
       <div class="row q-mt-lg">
         <q-btn @click="saveScrum" unelevated color="primary">
           <span v-if="scrumFormDialog.data.id">Update</span>
@@ -330,14 +336,26 @@ window_vars(user) }}
       class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
     >
       <span class="text-h5">Tasks</span>
-
-       
-<q-checkbox
-  v-model="tasksFormDialog.data.scrum"
-  label="Scrum ID"
-  hint="  "
-></q-checkbox>
   
+      <q-select
+        filled
+        dense
+        v-model.trim="tasksFormDialog.data.scrum_id"
+        label="Scrum"
+        :options="scrumList.map(x => ({label: x.name || x.id, value: x.id}))"
+        hint="Select the associated Scrum"
+        emit-value
+        map-options
+      ></q-select>
+
+<q-input
+  filled
+  dense
+  v-model.trim="tasksFormDialog.data.assignee"
+  label="Assignee (LNaddress)"
+  hint="Add here or on public page"
+></q-input>
+
 <q-input
   filled
   dense
@@ -345,29 +363,30 @@ window_vars(user) }}
   label="Task"
   hint="Describe task "
 ></q-input>
-  
+
 <q-input
   filled
   dense
-  v-model.trim="tasksFormDialog.data.assignee"
-  label="assignee"
-  hint="  (optional)"
+  type="number"
+  v-model.trim="tasksFormDialog.data.reward"
+  label="Reward"
+  hint="How much to pay for completing the task (in sats)  (optional)"
 ></q-input>
-  
-<q-checkbox
-  v-model="tasksFormDialog.data.complete"
-  label="Complete"
-  hint="True to pay sats   (optional)"
-></q-checkbox>
-  
+
 <q-input
   filled
   dense
   v-model.trim="tasksFormDialog.data.notes"
   label="Notes"
-  hint="  (optional)"
+  hint="Any useful notes"
 ></q-input>
- 
+
+ <q-checkbox
+  v-model="tasksFormDialog.data.complete"
+  label="Complete"
+  hint="True to pay sats   (optional)"
+></q-checkbox>
+  
       <div class="row q-mt-lg">
         <q-btn @click="saveTasks" unelevated color="primary">
           <span v-if="tasksFormDialog.data.id">Update</span>

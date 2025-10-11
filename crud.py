@@ -101,8 +101,8 @@ async def delete_scrum(user_id: str, scrum_id: str) -> None:
 ################################# Tasks ###########################
 
 
-async def create_tasks(scrum_id: str, data: CreateTasks) -> Tasks:
-    tasks = Tasks(**data.dict(), id=urlsafe_short_hash(), scrum_id=scrum_id)
+async def create_tasks(data: CreateTasks) -> Tasks:
+    tasks = Tasks(**data.dict(), id=urlsafe_short_hash())
     await db.insert("scrum.tasks", tasks)
     return tasks
 

@@ -15,7 +15,7 @@ window.app = Vue.createApp({
         data: {
           name: null,
           description: null,
-          
+          public_assigning: false
         }
       },
       scrumList: [],
@@ -42,7 +42,9 @@ window.app = Vue.createApp({
       tasksFormDialog: {
         show: false,
         scrum: {label: 'All Scrum', value: ''},
-        data: {}
+        data: {
+          complete: false,
+        }
       },
       tasksList: [],
       tasksTable: {
@@ -107,7 +109,7 @@ window.app = Vue.createApp({
       this.scrumFormDialog.data = {
           name: null,
           description: null,
-          
+          public_assigning: false
       }
       this.scrumFormDialog.show = true
     },
@@ -182,7 +184,9 @@ window.app = Vue.createApp({
 
     //////////////// Tasks ////////////////////////
     async showEditTasksForm(data) {
-      this.tasksFormDialog.data = {...data}
+      if (data){
+        this.tasksFormDialog.data = {...data}
+      }
       this.tasksFormDialog.show = true
     },
     async saveTasks() {

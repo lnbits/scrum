@@ -19,6 +19,7 @@ async def m002_scrum(db):
             user_id TEXT NOT NULL,
             name TEXT,
             description TEXT NOT NULL,
+            public_assigning BOOLEAN,
             progress INT,
             created_at TIMESTAMP NOT NULL DEFAULT {db.timestamp_now},
             updated_at TIMESTAMP NOT NULL DEFAULT {db.timestamp_now}

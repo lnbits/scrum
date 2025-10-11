@@ -19,6 +19,7 @@ from .crud import (
     get_tasks_by_id,
     get_tasks_paginated,
     get_scrum,
+    get_scrum_by_id,
     get_scrum_ids_by_user,
     get_scrum_paginated,
     update_tasks,
@@ -28,6 +29,7 @@ from .models import (
     Tasks,
     TasksFilters,
     CreateTasks,
+    TasksPublic,
     CreateScrum,
     Scrum,
     ScrumFilters,
@@ -125,7 +127,7 @@ async def api_delete_scrum(
 
 ############################# Tasks #############################
 @scrum_api_router.post(
-    "/api/v1/tasks/{scrum_id}",
+    "/api/v1/tasks",
     name="Create Tasks",
     summary="Create new tasks for the specified scrum.",
     response_description="The created tasks.",
@@ -133,15 +135,14 @@ async def api_delete_scrum(
     status_code=HTTPStatus.CREATED,
 )
 async def api_create_tasks(
-    scrum_id: str,
     data: CreateTasks,
     user: User = Depends(check_user_exists),
 ) -> Tasks:
-    scrum = await get_scrum(user.id, scrum_id)
+    scrum = await get_scrum(user.id, data.scrum_id)
     if not scrum:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
 
-    tasks = await create_tasks(scrum_id, data)
+    tasks = await create_tasks(data)
     return tasks
 
 
@@ -170,6 +171,28 @@ async def api_update_tasks(
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
     return tasks
 
+@scrum_api_router.put(
+    "/api/v1/tasks/public/{tasks_id}",
+    name="Update Tasks",
+    summary="Update the tasks with this id.",
+    response_description="The updated tasks.",
+    response_model=Tasks,
+)
+async def api_update_tasks(
+    tasks_id: str,
+    data: TasksPublic,
+) -> Tasks:
+    tasks = await get_tasks_by_id(tasks_id)
+    if not tasks:
+        raise HTTPException(HTTPStatus.NOT_FOUND, "Task not found.")
+
+    scrum = await get_scrum_by_id(tasks.scrum_id)
+    if not scrum:
+        raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
+    if not scrum.public_assigning and data.assignee is not tasks.assignee:
+        raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
+    tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
+    return tasks
 
 @scrum_api_router.get(
     "/api/v1/tasks/paginated",

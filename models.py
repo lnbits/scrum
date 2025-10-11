@@ -55,7 +55,6 @@ class CreateTasks(BaseModel):
     scrum_id: str
     assignee: str | None
     stage: TaskStage = TaskStage.todo
-    progress: int | None
     reward: int | None
     complete: bool | None
     notes: str | None
@@ -72,7 +71,6 @@ class Tasks(BaseModel):
     scrum_id: str
     assignee: str | None
     stage: TaskStage
-    progress: int | None
     reward: int | None
     complete: bool | None
     notes: str | None
@@ -85,7 +83,7 @@ class Tasks(BaseModel):
 
 class TasksFilters(FilterModel):
     __search_fields__ = [
-        "scrum","task","assignee","stage","progress","reward","complete","notes",
+        "scrum","task","assignee","stage","reward","complete","notes",
     ]
 
     __sort_fields__ = [
@@ -93,7 +91,6 @@ class TasksFilters(FilterModel):
         "task",
         "assignee",
         "stage",
-        "progress",
         "reward",
         "complete",
         "notes",

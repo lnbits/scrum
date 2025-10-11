@@ -41,7 +41,6 @@ async def m003_tasks(db):
             task TEXT NOT NULL,
             assignee TEXT,
             stage TEXT NOT NULL,
-            progress INT,
             reward INT,
             complete BOOLEAN,
             notes TEXT,

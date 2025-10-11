@@ -120,16 +120,38 @@
       tasksDone()  { return this.publicTasks.filter(t => t && t.stage === 'done') }
     },
     methods: {
-      onDragStart(id) {
-        this.draggingTaskId = id
-      },
-      handleDrop(targetStage) {
-        if (!this.draggingTaskId) return
-        const t = this.publicTasks.find(x => x && x.id === this.draggingTaskId)
-        if (t) t.stage = targetStage   // client-side only for now
-        this.draggingTaskId = null
-      }
+  onDragStart(id) {
+    this.draggingTaskId = id
+  },
+
+  async handleDrop(targetStage) {
+    if (!this.draggingTaskId) return
+    const id = this.draggingTaskId
+    this.draggingTaskId = null
+
+    const t = this.publicTasks.find(x => x && x.id === id)
+    if (!t || t.stage === targetStage) return
+
+    const previous = t.stage
+    t.stage = targetStage  // optimistic UI
+    console.log(t)
+
+    try {
+      await LNbits.api.request(
+        'PUT',
+        `/scrum/api/v1/tasks/public/${id}`,
+        null,
+        { stage: t.stage, assignee: t.assignee, notes: t.notes }
+      )
+      // optional toast
+      this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task updated' })
+    } catch (e) {
+      t.stage = previous  // rollback
+      LNbits.utils.notifyApiError(e)
     }
+  }
+}
+
   })
 
   // if your build doesn't auto-mount, uncomment:

@@ -1,0 +1,209 @@
+{
+    "id": "scrum",
+    "name": "Scrum",
+    "stub_version": "v0.2.0",
+    "short_description": "Scrum with paid tasks",
+    "description": "Make simple scrum boards and pay people when they complete tasks",
+    "owner_data": {
+        "name": "Scrum",
+        "editable": true,
+        "fields": [
+            {
+                "name": "name",
+                "type": "str",
+                "label": "Scrum Name",
+                "hint": "",
+                "optional": true,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "description",
+                "type": "text",
+                "label": "Scrum Description",
+                "hint": "Describe your task",
+                "optional": false,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "progress",
+                "type": "int",
+                "label": "Progress %",
+                "hint": "Progress % (1-100)",
+                "optional": true,
+                "editable": false,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            }
+        ]
+    },
+    "client_data": {
+        "name": "Tasks",
+        "editable": true,
+        "fields": [
+            {
+                "name": "scrum",
+                "type": "bool",
+                "label": "Scrum ID",
+                "hint": "",
+                "optional": false,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "task",
+                "type": "text",
+                "label": "Task",
+                "hint": "Describe task",
+                "optional": false,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "assignee",
+                "type": "text",
+                "label": "assignee",
+                "hint": "",
+                "optional": true,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "stage",
+                "type": "text",
+                "label": "Stage",
+                "hint": "",
+                "optional": false,
+                "editable": false,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "progress",
+                "type": "int",
+                "label": "Progress",
+                "hint": "",
+                "optional": true,
+                "editable": false,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "reward",
+                "type": "int",
+                "label": "Reward",
+                "hint": "Sats to payout once complete",
+                "optional": true,
+                "editable": false,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "complete",
+                "type": "bool",
+                "label": "Complete",
+                "hint": "True to pay sats",
+                "optional": true,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "notes",
+                "type": "text",
+                "label": "Notes",
+                "hint": "",
+                "optional": true,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            }
+        ]
+    },
+    "settings_data": {
+        "name": "Settings",
+        "editable": true,
+        "fields": [
+            {
+                "name": "name",
+                "type": "str",
+                "label": "Scrum Name",
+                "hint": "",
+                "optional": false,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "description",
+                "type": "text",
+                "label": "Scrum description",
+                "hint": "",
+                "optional": false,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            },
+            {
+                "name": "progress",
+                "type": "int",
+                "label": "Scrum progress",
+                "hint": "",
+                "optional": false,
+                "editable": true,
+                "searchable": true,
+                "sortable": true,
+                "fields": []
+            }
+        ],
+        "enabled": false,
+        "type": "user"
+    },
+    "public_page": {
+        "has_public_page": true,
+        "owner_data_fields": {
+            "name": "name",
+            "description": "description"
+        },
+        "client_data_fields": {
+            "public_inputs": [
+                "assignee"
+            ]
+        },
+        "action_fields": {
+            "generate_action": false,
+            "generate_payment_logic": false,
+            "wallet_id": "",
+            "currency": "",
+            "amount": "",
+            "amount_source": null,
+            "paid_flag": ""
+        }
+    },
+    "preview_action": {
+        "is_preview_mode": false,
+        "is_settings_preview": false,
+        "is_owner_data_preview": false,
+        "is_client_data_preview": false,
+        "is_public_page_preview": false
+    }
+}

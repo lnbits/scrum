@@ -1,0 +1,373 @@
+<!--/////////////////////////////////////////////////-->
+<!--//PAGE FOR THE EXTENSIONS BACKEND IN LNBITS//////-->
+<!--/////////////////////////////////////////////////-->
+
+
+{% extends "base.html" %}
+
+
+{% from "macros.jinja" import window_vars with context %} {% block scripts %} {{
+window_vars(user) }}
+
+
+<script src="{{ static_url_for('scrum/static', path='js/index.js') }}"></script>
+
+
+{% endblock %} {% block page %}
+<div class="row q-col-gutter-md">
+  <div class="col-12 col-md-8 col-lg-7 q-gutter-y-md">
+    
+
+    <div class="q-mt-lg">
+      <span class="text-h5">Scrum</span>
+    </div>
+    <q-card
+      id="scrumCard"
+      class="q-mt-xs"
+    >
+      <q-card-section
+        class=""
+      >
+        <div class="row items-center no-wrap q-mb-md">
+          <div class="col">
+            <q-input
+              :label="$t('search')"
+              dense
+              class="q-pr-xl"
+              v-model="scrumTable.search"
+            >
+              <template v-slot:before>
+                <q-icon name="search"> </q-icon>
+              </template>
+              <template v-slot:append>
+                <q-icon
+                  v-if="scrumTable.search !== ''"
+                  name="close"
+                  @click="scrumTable.search = ''"
+                  class="cursor-pointer"
+                >
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-auto">
+            
+            <q-btn
+              @click="showNewScrumForm()"
+              unelevated
+              split
+              color="primary"
+            >
+              New Scrum
+            </q-btn>
+            
+            <q-btn
+              flat
+              color="grey"
+              icon="file_download"
+              @click="exportScrumCSV"
+              >CSV</q-btn
+            >
+          </div>
+        </div>
+        <q-table
+          dense
+          flat
+          :rows="scrumList"
+          row-key="id"
+          :columns="scrumTable.columns"
+          v-model:pagination="scrumTable.pagination"
+          :loading="scrumTable.loading"
+          @request="getScrum"
+        >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width></q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                ${ col.label }
+              </q-th>
+            </q-tr>
+          </template>
+
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td auto-width>
+                
+                <q-btn
+                  flat
+                  dense
+                  size="xs"
+                  icon="launch"
+                  color="primary"
+                  type="a"
+                  :href="'/scrum/' + props.row.id"
+                  target="_blank"
+                  class="q-mr-sm"
+                  ><q-tooltip>Open public page</q-tooltip></q-btn
+                >
+                 
+                <q-btn
+                  flat
+                  dense
+                  size="xs"
+                  @click="showEditScrumForm(props.row)"
+                  icon="edit"
+                  color="light-blue"
+                  class="q-mr-sm"
+                >
+                  <q-tooltip> Edit </q-tooltip>
+                </q-btn>
+                
+                <q-btn
+                  flat
+                  dense
+                  size="xs"
+                  @click="deleteScrum(props.row.id)"
+                  icon="cancel"
+                  color="pink"
+                  class="q-mr-sm"
+                >
+                  <q-tooltip> Delete </q-tooltip>
+                </q-btn>
+              </q-td>
+
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <div v-if="col.field == 'updated_at'">
+                  <span v-text="dateFromNow(col.value)"> </span>
+                </div>
+                <div v-else>${ col.value }</div>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
+
+    <div class="q-mt-lg">
+      <span class="text-h5">Tasks</span>
+    </div>
+    <q-card
+      id="tasksCard"
+      class="q-mt-xs"
+    >
+      <q-card-section
+        class=""
+      >
+        <div class="row items-center no-wrap q-mb-md">
+          <div class="col">
+            <q-input
+              :label="$t('search')"
+              dense
+              class="q-pr-xl"
+              v-model="tasksTable.search"
+            >
+              <template v-slot:before>
+                <q-icon name="search"> </q-icon>
+              </template>
+              <template v-slot:append>
+                <q-icon
+                  v-if="tasksTable.search !== ''"
+                  name="close"
+                  @click="tasksTable.search = ''"
+                  class="cursor-pointer"
+                >
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-auto">
+            <q-select
+              filled
+              dense
+              v-model="tasksFormDialog.scrum"
+              :options="[{label: 'All Scrum', value: ''}, ...scrumList.map(x => ({label: x.name || x.id, value: x.id}))]"
+              label="Scrum"
+              class="q-mb-md"
+            ></q-select>
+          </div>
+          <div class="col-auto">
+            <q-btn
+              flat
+              color="grey"
+              icon="file_download"
+              class="q-mb-md"
+              @click="exportTasksCSV"
+              >CSV</q-btn
+            >
+          </div>
+        </div>
+        <q-table
+          dense
+          flat
+          :rows="tasksList"
+          row-key="id"
+          :columns="tasksTable.columns"
+          v-model:pagination="tasksTable.pagination"
+          :loading="tasksTable.loading"
+          @request="getTasks"
+        >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width></q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                ${ col.label }
+              </q-th>
+            </q-tr>
+          </template>
+
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td auto-width>
+                
+                <q-btn
+                  flat
+                  dense
+                  size="xs"
+                  @click="showEditTasksForm(props.row)"
+                  icon="edit"
+                  color="light-blue"
+                  class="q-mr-sm"
+                >
+                  <q-tooltip> Edit </q-tooltip>
+                </q-btn>
+                
+                <q-btn
+                  flat
+                  dense
+                  size="xs"
+                  @click="deleteTasks(props.row.id)"
+                  icon="cancel"
+                  color="pink"
+                  class="q-mr-sm"
+                >
+                  <q-tooltip> Delete </q-tooltip>
+                </q-btn>
+              </q-td>
+
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <div v-if="col.field == 'updated_at'">
+                  <span v-text="dateFromNow(col.value)"> </span>
+                </div>
+                <div v-else>${ col.value }</div>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
+  </div>
+  
+  <div class="col-12 col-md-4 col-lg-5 q-gutter-y-md">
+    <q-card>
+      <q-card-section>
+        <h6 class="text-subtitle1 q-my-none">
+          {{SITE_TITLE}} Scrum
+        </h6>
+        <p>Scrum with paid tasks</p>
+      </q-card-section>
+      <q-card-section class="q-pa-none">
+        <q-separator></q-separator>
+        <q-list>
+          {% include "scrum/_api_docs.html" %}
+          <q-separator></q-separator>
+          {% include "scrum/_scrum.html" %}
+        </q-list>
+      </q-card-section>
+    </q-card>
+  </div>
+  
+
+  <!--/////////////////////////////////////////////////-->
+  <!--//////////////FORM DIALOG////////////////////////-->
+  <!--/////////////////////////////////////////////////-->
+
+
+  <q-dialog v-model="scrumFormDialog.show" position="top">
+    <q-card
+      v-if="scrumFormDialog.show"
+      class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
+    >
+      <span class="text-h5">Scrum</span>
+
+       
+<q-input
+  filled
+  dense
+  v-model.trim="scrumFormDialog.data.name"
+  label="Scrum Name"
+  hint="  (optional)"
+></q-input>
+  
+<q-input
+  filled
+  dense
+  v-model.trim="scrumFormDialog.data.description"
+  label="Scrum Description"
+  hint="Describe your task "
+></q-input>
+ 
+      <div class="row q-mt-lg">
+        <q-btn @click="saveScrum" unelevated color="primary">
+          <span v-if="scrumFormDialog.data.id">Update</span>
+          <span v-else>Create</span>
+        </q-btn>
+        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+      </div>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="tasksFormDialog.show" position="top">
+    <q-card
+      v-if="tasksFormDialog.show"
+      class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
+    >
+      <span class="text-h5">Tasks</span>
+
+       
+<q-checkbox
+  v-model="tasksFormDialog.data.scrum"
+  label="Scrum ID"
+  hint="  "
+></q-checkbox>
+  
+<q-input
+  filled
+  dense
+  v-model.trim="tasksFormDialog.data.task"
+  label="Task"
+  hint="Describe task "
+></q-input>
+  
+<q-input
+  filled
+  dense
+  v-model.trim="tasksFormDialog.data.assignee"
+  label="assignee"
+  hint="  (optional)"
+></q-input>
+  
+<q-checkbox
+  v-model="tasksFormDialog.data.complete"
+  label="Complete"
+  hint="True to pay sats   (optional)"
+></q-checkbox>
+  
+<q-input
+  filled
+  dense
+  v-model.trim="tasksFormDialog.data.notes"
+  label="Notes"
+  hint="  (optional)"
+></q-input>
+ 
+      <div class="row q-mt-lg">
+        <q-btn @click="saveTasks" unelevated color="primary">
+          <span v-if="tasksFormDialog.data.id">Update</span>
+          <span v-else>Create</span>
+        </q-btn>
+        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+      </div>
+    </q-card>
+  </q-dialog>
+</div>
+{% endblock %}

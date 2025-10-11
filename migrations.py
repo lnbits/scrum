@@ -37,7 +37,6 @@ async def m003_tasks(db):
         CREATE TABLE scrum.tasks (
             id TEXT PRIMARY KEY,
             scrum_id TEXT NOT NULL,
-            scrum BOOLEAN NOT NULL,
             task TEXT NOT NULL,
             assignee TEXT,
             stage TEXT NOT NULL,

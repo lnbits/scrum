@@ -49,7 +49,6 @@ window.app = Vue.createApp({
         search: '',
         loading: false,
         columns: [
-          {"name": "scrum", "align": "left", "label": "Scrum ID", "field": "scrum", "sortable": true},
           {"name": "task", "align": "left", "label": "Task", "field": "task", "sortable": true},
           {"name": "assignee", "align": "left", "label": "assignee", "field": "assignee", "sortable": true},
           {"name": "stage", "align": "left", "label": "Stage", "field": "stage", "sortable": true},

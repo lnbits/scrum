@@ -45,7 +45,6 @@ class ScrumFilters(FilterModel):
 
 
 class CreateTasks(BaseModel):
-    scrum: bool
     task: str
     assignee: str | None
     stage: str
@@ -59,7 +58,6 @@ class CreateTasks(BaseModel):
 class Tasks(BaseModel):
     id: str
     scrum_id: str
-    scrum: bool
     task: str
     assignee: str | None
     stage: str

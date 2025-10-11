@@ -175,7 +175,6 @@ window_vars(user) }}
               </template>
             </q-input>
           </div>
-          <div class="col-auto">
             <q-select
               filled
               dense
@@ -184,8 +183,17 @@ window_vars(user) }}
               label="Scrum"
               class="q-mb-md"
             ></q-select>
-          </div>
+
           <div class="col-auto">
+            <q-btn
+              @click="showEditTasksForm()"
+              unelevated
+              split
+              color="primary"
+              class="q-mb-md q-ml-sm"
+            >
+              New Task
+            </q-btn>
             <q-btn
               flat
               color="grey"

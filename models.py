@@ -13,19 +13,19 @@ class TaskStage(str, Enum):
 
 ########################### Scrum ############################
 class CreateScrum(BaseModel):
-    name: str | None
+    name: str
     description: str
     public_assigning: bool
-    progress: int | None
+    wallet: str
 
 
 class Scrum(BaseModel):
     id: str
     user_id: str
-    name: str | None
+    name: str
     description: str
     public_assigning: bool
-    progress: int | None
+    wallet: str
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -35,13 +35,13 @@ class ScrumFilters(FilterModel):
     __search_fields__ = [
         "name",
         "description",
-        "progress",
+        "public_assigning",
     ]
 
     __sort_fields__ = [
         "name",
         "description",
-        "progress",
+        "public_assigning",
         "created_at",
         "updated_at",
     ]
@@ -76,7 +76,8 @@ class Tasks(BaseModel):
     assignee: str | None
     stage: TaskStage
     reward: int | None
-    complete: bool | None
+    paid: bool = False
+    complete: bool = False
     notes: str | None
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

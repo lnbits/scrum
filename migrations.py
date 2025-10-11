@@ -15,10 +15,10 @@ async def m002_scrum(db):
         CREATE TABLE scrum.scrum (
             id TEXT PRIMARY KEY,
             user_id TEXT NOT NULL,
-            name TEXT,
+            name TEXT NOT NULL,
             description TEXT NOT NULL,
+            wallet TEXT NOT NULL,
             public_assigning BOOLEAN,
-            progress INT,
             created_at TIMESTAMP NOT NULL DEFAULT {db.timestamp_now},
             updated_at TIMESTAMP NOT NULL DEFAULT {db.timestamp_now}
         );
@@ -40,6 +40,7 @@ async def m003_tasks(db):
             assignee TEXT,
             stage TEXT NOT NULL,
             reward INT,
+            paid BOOLEAN,
             complete BOOLEAN,
             notes TEXT,
             created_at TIMESTAMP NOT NULL DEFAULT {db.timestamp_now},

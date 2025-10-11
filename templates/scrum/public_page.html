@@ -16,16 +16,25 @@
           :key="task.id"
           flat
           bordered
-          draggable="true"
-          @dragstart="onDragStart(task.id)"
+          :draggable="canDrag(task)"
+          @dragstart="onDragStart($event, task)"
         >
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
-              <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
+              <div class="row items-center">
+                <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
+                <q-icon
+                  v-if="task.complete"
+                  class="q-pl-md"
+                  color="green"
+                  name="check"
+                ></q-icon>
+              </div>
               <div
                 class="text-caption text-grey"
                 v-if="task.notes"
                 v-text="task.notes"
+                style="white-space: pre-line"
               ></div>
             </q-card-section>
           </q-card-section>
@@ -33,6 +42,7 @@
             <div class="on-left text-caption text-grey">
               <span v-text="task.assignee"></span>
               <span
+                v-if="task.reward > 0"
                 v-text="' for ' + task.reward.toString() + 'sats reward'"
               ></span>
             </div>
@@ -84,65 +94,98 @@
 </div>
 {% endblock %} {% block scripts %}
 <script>
-  public_page_tasks = {{ public_page_tasks | safe }}
-  public_page_assigning = {{ public_page_assigning | tojson | safe }}
-  scrum_id = '{{ scrum_id }}'
+    public_page_tasks = {{ public_page_tasks | safe }}
+    public_page_assigning = {{ public_page_assigning | tojson | safe }}
+    scrum_id = '{{ scrum_id }}'
 
-  window.app = Vue.createApp({
-    mixins: [windowMixin],
-    data() {
-      return {
-        scrumId: scrum_id,
-        publicTasks: Array.isArray(public_page_tasks) ? public_page_tasks.filter(Boolean) : [],
-        draggingTaskId: null,
-        stages: ['todo','doing','done'],
-        stageLabels: { todo: 'To do', doing: 'Doing', done: 'Done' },
-        tasksFormDialog: { show: false, data: {} },
-        publicAssigning: public_page_assigning
-      }
-    },
-    methods: {
-      tasksBy(stage) {
-        return this.publicTasks.filter(t => t && t.stage === stage)
-      },
-
-      onDragStart(id) {
-        this.draggingTaskId = id
-      },
-
-      async handleDrop(targetStage) {
-        if (!this.draggingTaskId) return
-        const id = this.draggingTaskId
-        this.draggingTaskId = null
-
-        const t = this.publicTasks.find(x => x && x.id === id)
-        if (!t || t.stage === targetStage) return
-
-        const previous = t.stage
-        t.stage = targetStage
-        try {
-          await this.updateTask(t)
-        } catch (e) {
-          t.stage = previous
-          LNbits.utils.notifyApiError(e)
+    window.app = Vue.createApp({
+      mixins: [windowMixin],
+      data() {
+        return {
+          scrumId: scrum_id,
+          publicTasks: Array.isArray(public_page_tasks) ? public_page_tasks.filter(Boolean) : [],
+          draggingTaskId: null,
+          stages: ['todo','doing','done'],
+          stageLabels: { todo: 'To do', doing: 'Doing', done: 'Done' },
+          tasksFormDialog: { show: false, data: {} },
+          publicAssigning: public_page_assigning
         }
       },
+      methods: {
+    tasksBy(stage) {
+      return this.publicTasks.filter(t => t && t.stage === stage)
+    },
 
-      async updateTask(t) {
-        await LNbits.api.request(
-          'PUT',
-          `/scrum/api/v1/tasks/public/${t.id}`,
-          null,
-          { stage: t.stage, assignee: t.assignee, notes: t.notes }
-        )
-        this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task updated' })
-      },
-      editTask(t) {
-        this.tasksFormDialog.data = { ...t }
-        this.tasksFormDialog.show = true
+    canDrag(task) {
+      return !(task && task.complete && task.stage === 'done')
+    },
+
+    onDragStart(evt, task) {
+      if (!this.canDrag(task)) {
+        evt.preventDefault()
+        evt.stopPropagation()
+        return
       }
-    }
-  })
+      this.draggingTaskId = task.id
+    },
+
+    async handleDrop(targetStage) {
+      if (!this.draggingTaskId) return
+      const id = this.draggingTaskId
+      this.draggingTaskId = null
+
+      const t = this.publicTasks.find(x => x && x.id === id)
+      if (!t || t.stage === targetStage) return
+
+      const previous = t.stage
+      t.stage = targetStage
+      try {
+        await this.updateTask(t)
+      } catch (e) {
+        t.stage = previous
+        LNbits.utils.notifyApiError(e)
+      }
+    },
+
+    async updateTask(task) {
+      await LNbits.api.request(
+        'PUT',
+        `/scrum/api/v1/tasks/public/${task.id}`,
+        null,
+        { stage: task.stage, assignee: task.assignee, notes: task.notes }
+      )
+      const t = this.publicTasks.find(x => x && x.id === task.id)
+      if (t) Object.assign(t, task)
+      this.tasksFormDialog.show = false
+      this.tasksFormDialog.data = {}
+      this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task updated' })
+    },
+    editTask(t) {
+      this.tasksFormDialog.data = { ...t }
+      this.tasksFormDialog.show = true
+    },
+    subscribeToEvents(scrumId) {
+      try {
+        const url = new URL(window.location)
+        url.protocol = url.protocol === 'https:' ? 'wss' : 'ws'
+        url.pathname = `/api/v1/ws/${scrumId}`
+        const ws = new WebSocket(url)
+        ws.onmessage = async ({data}) => {
+          const task = JSON.parse(data)
+          this.publicTasks = this.publicTasks.map(t => t.id === task.id ? task : t)
+        }
+      } catch (err) {
+        console.warn(err)
+        LNbits.utils.notifyApiError(err)
+      }
+    },
+  },
+      mounted() {
+        if (this.scrumId) {
+          this.subscribeToEvents(this.scrumId)
+        }
+      }
+    })
 </script>
 
 {% endblock %}

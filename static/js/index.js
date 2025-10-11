@@ -38,13 +38,6 @@ window.app = Vue.createApp({
             sortable: true
           },
           {
-            name: 'progress',
-            align: 'left',
-            label: 'Progress %',
-            field: 'progress',
-            sortable: true
-          },
-          {
             name: 'updated_at',
             align: 'left',
             label: 'Updated At',
@@ -96,13 +89,6 @@ window.app = Vue.createApp({
             sortable: true
           },
           {
-            name: 'progress',
-            align: 'left',
-            label: 'Progress',
-            field: 'progress',
-            sortable: true
-          },
-          {
             name: 'reward',
             align: 'left',
             label: 'Reward',
@@ -114,6 +100,13 @@ window.app = Vue.createApp({
             align: 'left',
             label: 'Complete',
             field: 'complete',
+            sortable: true
+          },
+          {
+            name: 'paid',
+            align: 'left',
+            label: 'Paid',
+            field: 'paid',
             sortable: true
           },
           {

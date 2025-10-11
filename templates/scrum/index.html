@@ -282,6 +282,14 @@
         label="Scrum Description"
         hint="Describe your task "
       ></q-input>
+      <q-select
+        filled
+        dense
+        emit-value
+        v-model="scrumFormDialog.data.wallet"
+        :options="g.user.walletOptions"
+        label="Wallet *"
+      ></q-select>
 
       <q-checkbox
         v-model="scrumFormDialog.data.public_assigning"
@@ -321,16 +329,14 @@
         filled
         dense
         v-model.trim="tasksFormDialog.data.assignee"
-        label="Assignee (LNaddress)"
-        hint="Add here or on public page"
+        label="Assignee (LNaddress if task has a reward)"
       ></q-input>
 
       <q-input
         filled
         dense
         v-model.trim="tasksFormDialog.data.task"
-        label="Task"
-        hint="Describe task "
+        label="Describe task *"
       ></q-input>
 
       <q-input
@@ -338,8 +344,7 @@
         dense
         type="number"
         v-model.trim="tasksFormDialog.data.reward"
-        label="Reward"
-        hint="How much to pay for completing the task (in sats)  (optional)"
+        label="Reward in sats (leave 0 for no reward)"
       ></q-input>
 
       <q-input
@@ -347,12 +352,12 @@
         dense
         v-model.trim="tasksFormDialog.data.notes"
         label="Notes"
-        hint="Any useful notes"
+        type="textarea"
       ></q-input>
 
       <q-checkbox
         v-model="tasksFormDialog.data.complete"
-        label="Complete"
+        label="Complete (once clicked the task is marked as done, and reward is paid if set)"
         hint="True to pay sats   (optional)"
       ></q-checkbox>
 

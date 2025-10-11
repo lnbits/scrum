@@ -1,9 +1,12 @@
 # Description: This file contains the extensions API endpoints.
+import json
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from lnbits.core.models import SimpleStatus, User
+from lnbits.core.services import pay_invoice, websocket_updater
 from lnbits.db import Filters, Page
 from lnbits.decorators import (
     check_user_exists,
@@ -25,6 +28,7 @@ from .crud import (
     update_scrum,
     update_tasks,
 )
+from .helpers import get_pr
 from .models import (
     CreateScrum,
     CreateTasks,
@@ -164,8 +168,26 @@ async def api_update_tasks(
     scrum = await get_scrum(user.id, tasks.scrum_id)
     if not scrum:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
-
+    # If task is completed and has a reward, pay the reward
+    if data.complete and not tasks.paid and tasks.reward is not None and tasks.reward > 0:
+        pr = await get_pr(data.assignee, tasks.reward)
+        if not pr:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail="Error generating payment request.",
+            )
+        try:
+            await pay_invoice(
+                wallet_id=scrum.wallet,
+                payment_request=pr,
+                max_sat=int(tasks.reward),
+                extra={"tag": "ScrumTask", "task_id": tasks_id},
+            )
+            data.paid = True
+        except Exception as exc:
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Scrum payment failed. {exc!s}") from exc
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
+    await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
     return tasks
 
 

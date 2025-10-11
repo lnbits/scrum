@@ -21,7 +21,7 @@ async def wait_for_paid_invoices():
         await on_invoice_paid(payment)
 
 
-# Do somethhing when an invoice related top this extension is paid
+# Might add a task here later
 
 
 async def on_invoice_paid(payment: Payment) -> None:

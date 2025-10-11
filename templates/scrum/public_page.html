@@ -1,122 +1,138 @@
-<!--/////////////////////////////////////////////////-->
-<!--////////////////USER FACING PAGE/////////////////-->
-<!--/////////////////////////////////////////////////-->
+{% extends "public.html" %}
 
-{% extends "public.html" %} {% block page %}
-<div class="row q-col-gutter-md justify-center">
+{% block page %}
+<div class="row q-col-gutter-md justify-center items-stretch window-height">
 
-  <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md">
-    <q-card>
+  <!-- To do -->
+ <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
+       @dragover.prevent
+       @drop="handleDrop('todo')">
+    <q-card class="full-height">
       <q-card-section>
         <h6 class="q-mb-sm q-mt-none">To do</h6>
 
-    <q-card class="my-card" v-for="task in publicTasks" flat bordered>
-      <div v-if="task.stage === 'todo'">
-      <q-card-section horizontal>
-        <q-card-section class="q-pt-xs">
-          <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
-          <div class="text-caption text-grey" v-text="task.notes"></div>
-          <div class="text-caption text-grey" v-text="task.reward"></div>
-          <div class="text-caption text-grey" v-text="task.assignee"></div>
-        </q-card-section>
-      </q-card-section>
-      <q-card-actions>
-        <q-btn flat color="primary">
-          edit
-        </q-btn>
-      </q-card-actions>
-    </div>
-    </q-card>
-    
+        <q-card class="my-card q-mb-md"
+                v-for="task in tasksTodo"
+                :key="task.id"
+                flat bordered
+                draggable="true"
+                @dragstart="onDragStart(task.id)">
+          <q-card-section horizontal>
+            <q-card-section class="q-pt-xs">
+              <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
+              <div class="text-caption text-grey" v-if="task.notes" v-text="task.notes"></div>
+              <div class="text-caption text-grey" v-text="task.reward"></div>
+              <div class="text-caption text-grey" v-text="task.assignee"></div>
+            </q-card-section>
+          </q-card-section>
+          <q-card-actions>
+            <q-btn flat color="primary">edit</q-btn>
+          </q-card-actions>
+        </q-card>
 
       </q-card-section>
     </q-card>
   </div>
-    <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md">
-    <q-card>
+
+  <!-- Doing -->
+  <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
+       @dragover.prevent
+       @drop="handleDrop('doing')">
+    <q-card class="full-height">
       <q-card-section>
         <h6 class="q-mb-sm q-mt-none">Doing</h6>
 
-    <q-card class="my-card" v-for="task in publicTasks" flat bordered>
-      <div v-if="task.stage === 'doing'">
-      <q-card-section horizontal>
-        <q-card-section class="q-pt-xs">
-          <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
-          <div class="text-caption text-grey" v-text="task.notes"></div>
-          <div class="text-caption text-grey" v-text="task.reward"></div>
-          <div class="text-caption text-grey" v-text="task.assignee"></div>
-        </q-card-section>
-      </q-card-section>
-      <q-card-actions>
-        <q-btn flat color="primary">
-          edit
-        </q-btn>
-      </q-card-actions>
-    </div>
-    </q-card>
-    
+        <q-card class="my-card q-mb-md"
+                v-for="task in tasksDoing"
+                :key="task.id"
+                flat bordered
+                draggable="true"
+                @dragstart="onDragStart(task.id)">
+          <q-card-section horizontal>
+            <q-card-section class="q-pt-xs">
+              <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
+              <div class="text-caption text-grey" v-if="task.notes" v-text="task.notes"></div>
+              <div class="text-caption text-grey" v-text="task.reward"></div>
+              <div class="text-caption text-grey" v-text="task.assignee"></div>
+            </q-card-section>
+          </q-card-section>
+          <q-card-actions>
+            <q-btn flat color="primary">edit</q-btn>
+          </q-card-actions>
+        </q-card>
+
       </q-card-section>
     </q-card>
   </div>
-    <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md">
-    <q-card>
+
+  <!-- Done -->
+  <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
+       @dragover.prevent
+       @drop="handleDrop('done')">
+    <q-card class="full-height">
       <q-card-section>
         <h6 class="q-mb-sm q-mt-none">Done</h6>
-    <q-card class="my-card" v-for="task in publicTasks" flat bordered>
-      <div v-if="task.stage === 'done'">
-      <q-card-section horizontal>
-        <q-card-section class="q-pt-xs">
-          <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
-          <div class="text-caption text-grey" v-text="task.notes"></div>
-          <div class="text-caption text-grey" v-text="task.reward"></div>
-          <div class="text-caption text-grey" v-text="task.assignee"></div>
-        </q-card-section>
-      </q-card-section>
-      <q-card-actions>
-        <q-btn flat color="primary">
-          edit
-        </q-btn>
-      </q-card-actions>
-    </div>
-    </q-card>
-    
+
+        <q-card class="my-card q-mb-md"
+                v-for="task in tasksDone"
+                :key="task.id"
+                flat bordered
+                draggable="true"
+                @dragstart="onDragStart(task.id)">
+          <q-card-section horizontal>
+            <q-card-section class="q-pt-xs">
+              <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
+              <div class="text-caption text-grey" v-if="task.notes" v-text="task.notes"></div>
+              <div class="text-caption text-grey" v-text="task.reward"></div>
+              <div class="text-caption text-grey" v-text="task.assignee"></div>
+            </q-card-section>
+          </q-card-section>
+          <q-card-actions>
+            <q-btn flat color="primary">edit</q-btn>
+          </q-card-actions>
+        </q-card>
+
       </q-card-section>
     </q-card>
   </div>
+
 </div>
-{% endblock %} {% block scripts %}
+{% endblock %}
+
+{% block scripts %}
 <script>
   public_page_tasks = {{ public_page_tasks | safe }}
   scrum_id = '{{ scrum_id }}'
+
+  // expose globally so LNbits can attach mixins/components
   window.app = Vue.createApp({
-    el: '#vue',
     mixins: [windowMixin],
-    data: function () {
+    data() {
       return {
-        paymentRequest: '',
-        paymentHash: '',
-        invoicePaid: false,
         scrumId: scrum_id,
-        tasksId: null,
-        publicTasks: public_page_tasks
+        publicTasks: Array.isArray(public_page_tasks) ? public_page_tasks.filter(Boolean) : [],
+        draggingTaskId: null
       }
+    },
+    computed: {
+      tasksTodo()  { return this.publicTasks.filter(t => t && t.stage === 'todo') },
+      tasksDoing() { return this.publicTasks.filter(t => t && t.stage === 'doing') },
+      tasksDone()  { return this.publicTasks.filter(t => t && t.stage === 'done') }
     },
     methods: {
-      async moveTask(taskId, data)
-      {
-        await LNbits.api.request(
-          "PUT",
-          '/scrum/api/v1/public/tasks/' + taskId,
-          null,
-          data
-        )
-        this.getTasks()
-        this.tasksFormDialog.show = false
+      onDragStart(id) {
+        this.draggingTaskId = id
+      },
+      handleDrop(targetStage) {
+        if (!this.draggingTaskId) return
+        const t = this.publicTasks.find(x => x && x.id === this.draggingTaskId)
+        if (t) t.stage = targetStage   // client-side only for now
+        this.draggingTaskId = null
       }
-    },
-    created: function () {
-      console.log(this.publicTasks)
     }
   })
+
+  // if your build doesn't auto-mount, uncomment:
+  // window.addEventListener('DOMContentLoaded', () => window.app.mount('#vue'))
 </script>
 {% endblock %}

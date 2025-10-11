@@ -1,16 +1,17 @@
 # Description: Add your page endpoints here.
 
+import json
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from lnbits.core.models import User
 from lnbits.decorators import check_user_exists
 from lnbits.helpers import template_renderer
-from loguru import logger
+
 from .crud import get_scrum_by_id, get_tasks_paginated
-from fastapi.encoders import jsonable_encoder
-import json
+
 scrum_generic_router = APIRouter()
 
 
@@ -28,9 +29,7 @@ def scrum_renderer():
 
 @scrum_generic_router.get("/", response_class=HTMLResponse)
 async def index(req: Request, user: User = Depends(check_user_exists)):
-    return scrum_renderer().TemplateResponse(
-        "scrum/index.html", {"request": req, "user": user.json()}
-    )
+    return scrum_renderer().TemplateResponse("scrum/index.html", {"request": req, "user": user.json()})
 
 
 # Frontend shareable page
@@ -58,5 +57,3 @@ async def scrum_public_page(req: Request, scrum_id: str):
             "public_page_tasks": public_page_tasks_json,
         },
     )
-
-

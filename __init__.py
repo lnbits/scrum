@@ -9,9 +9,7 @@ from .tasks import wait_for_paid_invoices
 from .views import scrum_generic_router
 from .views_api import scrum_api_router
 
-scrum_ext: APIRouter = APIRouter(
-    prefix="/scrum", tags=["Scrum"]
-)
+scrum_ext: APIRouter = APIRouter(prefix="/scrum", tags=["Scrum"])
 scrum_ext.include_router(scrum_generic_router)
 scrum_ext.include_router(scrum_api_router)
 

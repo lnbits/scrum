@@ -5,8 +5,6 @@
 empty_dict: dict[str, str] = {}
 
 
-
-
 async def m002_scrum(db):
     """
     Initial scrum table.

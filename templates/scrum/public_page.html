@@ -1,26 +1,32 @@
-{% extends "public.html" %}
-
-{% block page %}
+{% extends "public.html" %} {% block page %}
 <div class="row q-col-gutter-md justify-center items-stretch window-height">
-
   <!-- To do -->
- <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
-       @dragover.prevent
-       @drop="handleDrop('todo')">
+  <div
+    class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
+    @dragover.prevent
+    @drop="handleDrop('todo')"
+  >
     <q-card class="full-height">
       <q-card-section>
         <h6 class="q-mb-sm q-mt-none">To do</h6>
 
-        <q-card class="my-card q-mb-md"
-                v-for="task in tasksTodo"
-                :key="task.id"
-                flat bordered
-                draggable="true"
-                @dragstart="onDragStart(task.id)">
+        <q-card
+          class="my-card q-mb-md"
+          v-for="task in tasksTodo"
+          :key="task.id"
+          flat
+          bordered
+          draggable="true"
+          @dragstart="onDragStart(task.id)"
+        >
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
               <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
-              <div class="text-caption text-grey" v-if="task.notes" v-text="task.notes"></div>
+              <div
+                class="text-caption text-grey"
+                v-if="task.notes"
+                v-text="task.notes"
+              ></div>
               <div class="text-caption text-grey" v-text="task.reward"></div>
               <div class="text-caption text-grey" v-text="task.assignee"></div>
             </q-card-section>
@@ -29,29 +35,37 @@
             <q-btn flat color="primary">edit</q-btn>
           </q-card-actions>
         </q-card>
-
       </q-card-section>
     </q-card>
   </div>
 
   <!-- Doing -->
-  <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
-       @dragover.prevent
-       @drop="handleDrop('doing')">
+  <div
+    class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
+    @dragover.prevent
+    @drop="handleDrop('doing')"
+  >
     <q-card class="full-height">
       <q-card-section>
         <h6 class="q-mb-sm q-mt-none">Doing</h6>
 
-        <q-card class="my-card q-mb-md"
-                v-for="task in tasksDoing"
-                :key="task.id"
-                flat bordered
-                draggable="true"
-                @dragstart="onDragStart(task.id)">
+        <q-card
+          class="my-card q-mb-md"
+          v-for="task in tasksDoing"
+          :key="task.id"
+          flat
+          bordered
+          draggable="true"
+          @dragstart="onDragStart(task.id)"
+        >
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
               <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
-              <div class="text-caption text-grey" v-if="task.notes" v-text="task.notes"></div>
+              <div
+                class="text-caption text-grey"
+                v-if="task.notes"
+                v-text="task.notes"
+              ></div>
               <div class="text-caption text-grey" v-text="task.reward"></div>
               <div class="text-caption text-grey" v-text="task.assignee"></div>
             </q-card-section>
@@ -60,29 +74,37 @@
             <q-btn flat color="primary">edit</q-btn>
           </q-card-actions>
         </q-card>
-
       </q-card-section>
     </q-card>
   </div>
 
   <!-- Done -->
-  <div class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
-       @dragover.prevent
-       @drop="handleDrop('done')">
+  <div
+    class="col-12 col-sm-6 col-md-5 col-lg-4 q-gutter-y-md column justify-between full-height"
+    @dragover.prevent
+    @drop="handleDrop('done')"
+  >
     <q-card class="full-height">
       <q-card-section>
         <h6 class="q-mb-sm q-mt-none">Done</h6>
 
-        <q-card class="my-card q-mb-md"
-                v-for="task in tasksDone"
-                :key="task.id"
-                flat bordered
-                draggable="true"
-                @dragstart="onDragStart(task.id)">
+        <q-card
+          class="my-card q-mb-md"
+          v-for="task in tasksDone"
+          :key="task.id"
+          flat
+          bordered
+          draggable="true"
+          @dragstart="onDragStart(task.id)"
+        >
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
               <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
-              <div class="text-caption text-grey" v-if="task.notes" v-text="task.notes"></div>
+              <div
+                class="text-caption text-grey"
+                v-if="task.notes"
+                v-text="task.notes"
+              ></div>
               <div class="text-caption text-grey" v-text="task.reward"></div>
               <div class="text-caption text-grey" v-text="task.assignee"></div>
             </q-card-section>
@@ -91,70 +113,66 @@
             <q-btn flat color="primary">edit</q-btn>
           </q-card-actions>
         </q-card>
-
       </q-card-section>
     </q-card>
   </div>
-
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
-  public_page_tasks = {{ public_page_tasks | safe }}
-  scrum_id = '{{ scrum_id }}'
+    public_page_tasks = {{ public_page_tasks | safe }}
+    scrum_id = '{{ scrum_id }}'
 
-  // expose globally so LNbits can attach mixins/components
-  window.app = Vue.createApp({
-    mixins: [windowMixin],
-    data() {
-      return {
-        scrumId: scrum_id,
-        publicTasks: Array.isArray(public_page_tasks) ? public_page_tasks.filter(Boolean) : [],
-        draggingTaskId: null
+    // expose globally so LNbits can attach mixins/components
+    window.app = Vue.createApp({
+      mixins: [windowMixin],
+      data() {
+        return {
+          scrumId: scrum_id,
+          publicTasks: Array.isArray(public_page_tasks) ? public_page_tasks.filter(Boolean) : [],
+          draggingTaskId: null
+        }
+      },
+      computed: {
+        tasksTodo()  { return this.publicTasks.filter(t => t && t.stage === 'todo') },
+        tasksDoing() { return this.publicTasks.filter(t => t && t.stage === 'doing') },
+        tasksDone()  { return this.publicTasks.filter(t => t && t.stage === 'done') }
+      },
+      methods: {
+    onDragStart(id) {
+      this.draggingTaskId = id
+    },
+
+    async handleDrop(targetStage) {
+      if (!this.draggingTaskId) return
+      const id = this.draggingTaskId
+      this.draggingTaskId = null
+
+      const t = this.publicTasks.find(x => x && x.id === id)
+      if (!t || t.stage === targetStage) return
+
+      const previous = t.stage
+      t.stage = targetStage
+      try {
+        await this.updateTask(t)
+      } catch (e) {
+        t.stage = previous  // rollback
+        LNbits.utils.notifyApiError(e)
       }
     },
-    computed: {
-      tasksTodo()  { return this.publicTasks.filter(t => t && t.stage === 'todo') },
-      tasksDoing() { return this.publicTasks.filter(t => t && t.stage === 'doing') },
-      tasksDone()  { return this.publicTasks.filter(t => t && t.stage === 'done') }
-    },
-    methods: {
-  onDragStart(id) {
-    this.draggingTaskId = id
-  },
-
-  async handleDrop(targetStage) {
-    if (!this.draggingTaskId) return
-    const id = this.draggingTaskId
-    this.draggingTaskId = null
-
-    const t = this.publicTasks.find(x => x && x.id === id)
-    if (!t || t.stage === targetStage) return
-
-    const previous = t.stage
-    t.stage = targetStage  // optimistic UI
-    console.log(t)
-
-    try {
-      await LNbits.api.request(
-        'PUT',
-        `/scrum/api/v1/tasks/public/${id}`,
-        null,
-        { stage: t.stage, assignee: t.assignee, notes: t.notes }
-      )
-      // optional toast
-      this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task updated' })
-    } catch (e) {
-      t.stage = previous  // rollback
-      LNbits.utils.notifyApiError(e)
+    async updateTask(t) {
+        await LNbits.api.request(
+          'PUT',
+          `/scrum/api/v1/tasks/public/${t.id}`,
+          null,
+          { stage: t.stage, assignee: t.assignee, notes: t.notes }
+        )
+        this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task updated' })
     }
   }
-}
 
-  })
+    })
 
-  // if your build doesn't auto-mount, uncomment:
-  // window.addEventListener('DOMContentLoaded', () => window.app.mount('#vue'))
+    // if your build doesn't auto-mount, uncomment:
+    // window.addEventListener('DOMContentLoaded', () => window.app.mount('#vue'))
 </script>
 {% endblock %}

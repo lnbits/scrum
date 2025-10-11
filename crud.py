@@ -5,12 +5,12 @@ from lnbits.db import Database, Filters, Page
 from lnbits.helpers import urlsafe_short_hash
 
 from .models import (
-    Tasks,
-    TasksFilters,
-    CreateTasks,
     CreateScrum,
+    CreateTasks,
     Scrum,
     ScrumFilters,
+    Tasks,
+    TasksFilters,
 )
 
 db = Database("ext_scrum")
@@ -175,5 +175,3 @@ async def delete_tasks(scrum_id: str, tasks_id: str) -> None:
         """,
         {"id": tasks_id, "scrum_id": scrum_id},
     )
-
-

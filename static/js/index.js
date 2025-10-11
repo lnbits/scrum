@@ -23,12 +23,35 @@ window.app = Vue.createApp({
         search: '',
         loading: false,
         columns: [
-          {"name": "name", "align": "left", "label": "Scrum Name", "field": "name", "sortable": true},
-          {"name": "description", "align": "left", "label": "Scrum Description", "field": "description", "sortable": true},
-          {"name": "progress", "align": "left", "label": "Progress %", "field": "progress", "sortable": true},
-          {"name": "updated_at", "align": "left", "label": "Updated At", "field": "updated_at", "sortable": true},
-          {"name": "id", "align": "left", "label": "ID", "field": "id", "sortable": true},
-          
+          {
+            name: 'name',
+            align: 'left',
+            label: 'Scrum Name',
+            field: 'name',
+            sortable: true
+          },
+          {
+            name: 'description',
+            align: 'left',
+            label: 'Scrum Description',
+            field: 'description',
+            sortable: true
+          },
+          {
+            name: 'progress',
+            align: 'left',
+            label: 'Progress %',
+            field: 'progress',
+            sortable: true
+          },
+          {
+            name: 'updated_at',
+            align: 'left',
+            label: 'Updated At',
+            field: 'updated_at',
+            sortable: true
+          },
+          {name: 'id', align: 'left', label: 'ID', field: 'id', sortable: true}
         ],
         pagination: {
           sortBy: 'updated_at',
@@ -43,7 +66,7 @@ window.app = Vue.createApp({
         show: false,
         scrum: {label: 'All Scrum', value: ''},
         data: {
-          complete: false,
+          complete: false
         }
       },
       tasksList: [],
@@ -51,16 +74,63 @@ window.app = Vue.createApp({
         search: '',
         loading: false,
         columns: [
-          {"name": "task", "align": "left", "label": "Task", "field": "task", "sortable": true},
-          {"name": "assignee", "align": "left", "label": "assignee", "field": "assignee", "sortable": true},
-          {"name": "stage", "align": "left", "label": "Stage", "field": "stage", "sortable": true},
-          {"name": "progress", "align": "left", "label": "Progress", "field": "progress", "sortable": true},
-          {"name": "reward", "align": "left", "label": "Reward", "field": "reward", "sortable": true},
-          {"name": "complete", "align": "left", "label": "Complete", "field": "complete", "sortable": true},
-          {"name": "notes", "align": "left", "label": "Notes", "field": "notes", "sortable": true},
-          {"name": "updated_at", "align": "left", "label": "Updated At", "field": "updated_at", "sortable": true},
-          {"name": "id", "align": "left", "label": "ID", "field": "id", "sortable": true},
-          
+          {
+            name: 'task',
+            align: 'left',
+            label: 'Task',
+            field: 'task',
+            sortable: true
+          },
+          {
+            name: 'assignee',
+            align: 'left',
+            label: 'assignee',
+            field: 'assignee',
+            sortable: true
+          },
+          {
+            name: 'stage',
+            align: 'left',
+            label: 'Stage',
+            field: 'stage',
+            sortable: true
+          },
+          {
+            name: 'progress',
+            align: 'left',
+            label: 'Progress',
+            field: 'progress',
+            sortable: true
+          },
+          {
+            name: 'reward',
+            align: 'left',
+            label: 'Reward',
+            field: 'reward',
+            sortable: true
+          },
+          {
+            name: 'complete',
+            align: 'left',
+            label: 'Complete',
+            field: 'complete',
+            sortable: true
+          },
+          {
+            name: 'notes',
+            align: 'left',
+            label: 'Notes',
+            field: 'notes',
+            sortable: true
+          },
+          {
+            name: 'updated_at',
+            align: 'left',
+            label: 'Updated At',
+            field: 'updated_at',
+            sortable: true
+          },
+          {name: 'id', align: 'left', label: 'ID', field: 'id', sortable: true}
         ],
         pagination: {
           sortBy: 'updated_at',
@@ -103,13 +173,12 @@ window.app = Vue.createApp({
   },
 
   methods: {
-
     //////////////// Scrum ////////////////////////
     async showNewScrumForm() {
       this.scrumFormDialog.data = {
-          name: null,
-          description: null,
-          public_assigning: false
+        name: null,
+        description: null,
+        public_assigning: false
       }
       this.scrumFormDialog.show = true
     },
@@ -118,7 +187,6 @@ window.app = Vue.createApp({
       this.scrumFormDialog.show = true
     },
     async saveScrum() {
-      
       try {
         const data = {extra: {}, ...this.scrumFormDialog.data}
         const method = data.id ? 'PUT' : 'POST'
@@ -137,13 +205,9 @@ window.app = Vue.createApp({
     },
 
     async getScrum(props) {
-      
       try {
         this.scrumTable.loading = true
-        const params = LNbits.utils.prepareFilterQuery(
-          this.scrumTable,
-          props
-        )
+        const params = LNbits.utils.prepareFilterQuery(this.scrumTable, props)
         const {data} = await LNbits.api.request(
           'GET',
           `/scrum/api/v1/scrum/paginated?${params}`,
@@ -162,7 +226,6 @@ window.app = Vue.createApp({
         .confirmDialog('Are you sure you want to delete this Scrum?')
         .onOk(async () => {
           try {
-            
             await LNbits.api.request(
               'DELETE',
               '/scrum/api/v1/scrum/' + scrumId,
@@ -184,13 +247,12 @@ window.app = Vue.createApp({
 
     //////////////// Tasks ////////////////////////
     async showEditTasksForm(data) {
-      if (data){
+      if (data) {
         this.tasksFormDialog.data = {...data}
       }
       this.tasksFormDialog.show = true
     },
     async saveTasks() {
-      
       try {
         const data = {extra: {}, ...this.tasksFormDialog.data}
         const method = data.id ? 'PUT' : 'POST'
@@ -209,13 +271,9 @@ window.app = Vue.createApp({
     },
 
     async getTasks(props) {
-      
       try {
         this.tasksTable.loading = true
-        let params = LNbits.utils.prepareFilterQuery(
-          this.tasksTable,
-          props
-        )
+        let params = LNbits.utils.prepareFilterQuery(this.tasksTable, props)
         const scrumId = this.tasksFormDialog.scrum.value
         if (scrumId) {
           params += `&scrum_id=${scrumId}`
@@ -238,7 +296,6 @@ window.app = Vue.createApp({
         .confirmDialog('Are you sure you want to delete this Tasks?')
         .onOk(async () => {
           try {
-            
             await LNbits.api.request(
               'DELETE',
               '/scrum/api/v1/tasks/' + tasksId,
@@ -279,8 +336,5 @@ window.app = Vue.createApp({
     this.fetchCurrencies()
     this.getScrum()
     this.getTasks()
-
-    
-    
   }
 })

@@ -2,32 +2,19 @@
 <!--//PAGE FOR THE EXTENSIONS BACKEND IN LNBITS//////-->
 <!--/////////////////////////////////////////////////-->
 
-
-{% extends "base.html" %}
-
-
-{% from "macros.jinja" import window_vars with context %} {% block scripts %} {{
-window_vars(user) }}
-
+{% extends "base.html" %} {% from "macros.jinja" import window_vars with context
+%} {% block scripts %} {{ window_vars(user) }}
 
 <script src="{{ static_url_for('scrum/static', path='js/index.js') }}"></script>
-
 
 {% endblock %} {% block page %}
 <div class="row q-col-gutter-md">
   <div class="col-12 col-md-8 col-lg-7 q-gutter-y-md">
-    
-
     <div class="q-mt-lg">
       <span class="text-h5">Scrum</span>
     </div>
-    <q-card
-      id="scrumCard"
-      class="q-mt-xs"
-    >
-      <q-card-section
-        class=""
-      >
+    <q-card id="scrumCard" class="q-mt-xs">
+      <q-card-section class="">
         <div class="row items-center no-wrap q-mb-md">
           <div class="col">
             <q-input
@@ -51,16 +38,10 @@ window_vars(user) }}
             </q-input>
           </div>
           <div class="col-auto">
-            
-            <q-btn
-              @click="showNewScrumForm()"
-              unelevated
-              split
-              color="primary"
-            >
+            <q-btn @click="showNewScrumForm()" unelevated split color="primary">
               New Scrum
             </q-btn>
-            
+
             <q-btn
               flat
               color="grey"
@@ -92,7 +73,6 @@ window_vars(user) }}
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td auto-width>
-                
                 <q-btn
                   flat
                   dense
@@ -105,7 +85,7 @@ window_vars(user) }}
                   class="q-mr-sm"
                   ><q-tooltip>Open public page</q-tooltip></q-btn
                 >
-                 
+
                 <q-btn
                   flat
                   dense
@@ -117,7 +97,7 @@ window_vars(user) }}
                 >
                   <q-tooltip> Edit </q-tooltip>
                 </q-btn>
-                
+
                 <q-btn
                   flat
                   dense
@@ -146,13 +126,8 @@ window_vars(user) }}
     <div class="q-mt-lg">
       <span class="text-h5">Tasks</span>
     </div>
-    <q-card
-      id="tasksCard"
-      class="q-mt-xs"
-    >
-      <q-card-section
-        class=""
-      >
+    <q-card id="tasksCard" class="q-mt-xs">
+      <q-card-section class="">
         <div class="row items-center no-wrap q-mb-md">
           <div class="col">
             <q-input
@@ -175,14 +150,14 @@ window_vars(user) }}
               </template>
             </q-input>
           </div>
-            <q-select
-              filled
-              dense
-              v-model="tasksFormDialog.scrum"
-              :options="[{label: 'All Scrum', value: ''}, ...scrumList.map(x => ({label: x.name || x.id, value: x.id}))]"
-              label="Scrum"
-              class="q-mb-md"
-            ></q-select>
+          <q-select
+            filled
+            dense
+            v-model="tasksFormDialog.scrum"
+            :options="[{label: 'All Scrum', value: ''}, ...scrumList.map(x => ({label: x.name || x.id, value: x.id}))]"
+            label="Scrum"
+            class="q-mb-md"
+          ></q-select>
 
           <div class="col-auto">
             <q-btn
@@ -226,7 +201,6 @@ window_vars(user) }}
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td auto-width>
-                
                 <q-btn
                   flat
                   dense
@@ -238,7 +212,7 @@ window_vars(user) }}
                 >
                   <q-tooltip> Edit </q-tooltip>
                 </q-btn>
-                
+
                 <q-btn
                   flat
                   dense
@@ -264,13 +238,11 @@ window_vars(user) }}
       </q-card-section>
     </q-card>
   </div>
-  
+
   <div class="col-12 col-md-4 col-lg-5 q-gutter-y-md">
     <q-card>
       <q-card-section>
-        <h6 class="text-subtitle1 q-my-none">
-          {{SITE_TITLE}} Scrum
-        </h6>
+        <h6 class="text-subtitle1 q-my-none">{{SITE_TITLE}} Scrum</h6>
         <p>Scrum with paid tasks</p>
       </q-card-section>
       <q-card-section class="q-pa-none">
@@ -283,12 +255,10 @@ window_vars(user) }}
       </q-card-section>
     </q-card>
   </div>
-  
 
   <!--/////////////////////////////////////////////////-->
   <!--//////////////FORM DIALOG////////////////////////-->
   <!--/////////////////////////////////////////////////-->
-
 
   <q-dialog v-model="scrumFormDialog.show" position="top">
     <q-card
@@ -297,28 +267,27 @@ window_vars(user) }}
     >
       <span class="text-h5">Scrum</span>
 
-       
-<q-input
-  filled
-  dense
-  v-model.trim="scrumFormDialog.data.name"
-  label="Scrum Name"
-  hint="  (optional)"
-></q-input>
-  
-<q-input
-  filled
-  dense
-  v-model.trim="scrumFormDialog.data.description"
-  label="Scrum Description"
-  hint="Describe your task "
-></q-input>
- 
- <q-checkbox
-  v-model="tasksFormDialog.data.public_assigning"
-  label="Public Assigning (allow users to assign themselves tasks on public page)"
-  hint=""
-></q-checkbox>
+      <q-input
+        filled
+        dense
+        v-model.trim="scrumFormDialog.data.name"
+        label="Scrum Name"
+        hint="  (optional)"
+      ></q-input>
+
+      <q-input
+        filled
+        dense
+        v-model.trim="scrumFormDialog.data.description"
+        label="Scrum Description"
+        hint="Describe your task "
+      ></q-input>
+
+      <q-checkbox
+        v-model="tasksFormDialog.data.public_assigning"
+        label="Public Assigning (allow users to assign themselves tasks on public page)"
+        hint=""
+      ></q-checkbox>
 
       <div class="row q-mt-lg">
         <q-btn @click="saveScrum" unelevated color="primary">
@@ -336,7 +305,7 @@ window_vars(user) }}
       class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
     >
       <span class="text-h5">Tasks</span>
-  
+
       <q-select
         filled
         dense
@@ -348,45 +317,45 @@ window_vars(user) }}
         map-options
       ></q-select>
 
-<q-input
-  filled
-  dense
-  v-model.trim="tasksFormDialog.data.assignee"
-  label="Assignee (LNaddress)"
-  hint="Add here or on public page"
-></q-input>
+      <q-input
+        filled
+        dense
+        v-model.trim="tasksFormDialog.data.assignee"
+        label="Assignee (LNaddress)"
+        hint="Add here or on public page"
+      ></q-input>
 
-<q-input
-  filled
-  dense
-  v-model.trim="tasksFormDialog.data.task"
-  label="Task"
-  hint="Describe task "
-></q-input>
+      <q-input
+        filled
+        dense
+        v-model.trim="tasksFormDialog.data.task"
+        label="Task"
+        hint="Describe task "
+      ></q-input>
 
-<q-input
-  filled
-  dense
-  type="number"
-  v-model.trim="tasksFormDialog.data.reward"
-  label="Reward"
-  hint="How much to pay for completing the task (in sats)  (optional)"
-></q-input>
+      <q-input
+        filled
+        dense
+        type="number"
+        v-model.trim="tasksFormDialog.data.reward"
+        label="Reward"
+        hint="How much to pay for completing the task (in sats)  (optional)"
+      ></q-input>
 
-<q-input
-  filled
-  dense
-  v-model.trim="tasksFormDialog.data.notes"
-  label="Notes"
-  hint="Any useful notes"
-></q-input>
+      <q-input
+        filled
+        dense
+        v-model.trim="tasksFormDialog.data.notes"
+        label="Notes"
+        hint="Any useful notes"
+      ></q-input>
 
- <q-checkbox
-  v-model="tasksFormDialog.data.complete"
-  label="Complete"
-  hint="True to pay sats   (optional)"
-></q-checkbox>
-  
+      <q-checkbox
+        v-model="tasksFormDialog.data.complete"
+        label="Complete"
+        hint="True to pay sats   (optional)"
+      ></q-checkbox>
+
       <div class="row q-mt-lg">
         <q-btn @click="saveTasks" unelevated color="primary">
           <span v-if="tasksFormDialog.data.id">Update</span>

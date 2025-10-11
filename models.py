@@ -1,12 +1,15 @@
 from datetime import datetime, timezone
 from enum import Enum
+
 from lnbits.db import FilterModel
 from pydantic import BaseModel, Field
+
 
 class TaskStage(str, Enum):
     todo = "todo"
     doing = "doing"
     done = "done"
+
 
 ########################### Scrum ############################
 class CreateScrum(BaseModel):
@@ -14,7 +17,6 @@ class CreateScrum(BaseModel):
     description: str
     public_assigning: bool
     progress: int | None
-    
 
 
 class Scrum(BaseModel):
@@ -24,21 +26,22 @@ class Scrum(BaseModel):
     description: str
     public_assigning: bool
     progress: int | None
-    
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ScrumFilters(FilterModel):
     __search_fields__ = [
-        "name","description","progress",
+        "name",
+        "description",
+        "progress",
     ]
 
     __sort_fields__ = [
         "name",
         "description",
         "progress",
-        
         "created_at",
         "updated_at",
     ]
@@ -59,11 +62,12 @@ class CreateTasks(BaseModel):
     complete: bool | None
     notes: str | None
 
+
 class TasksPublic(BaseModel):
     assignee: str | None
     stage: TaskStage = TaskStage.todo
     notes: str | None
-    
+
 
 class Tasks(BaseModel):
     id: str
@@ -74,16 +78,20 @@ class Tasks(BaseModel):
     reward: int | None
     complete: bool | None
     notes: str | None
-    
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-
-
 class TasksFilters(FilterModel):
     __search_fields__ = [
-        "scrum","task","assignee","stage","reward","complete","notes",
+        "scrum",
+        "task",
+        "assignee",
+        "stage",
+        "reward",
+        "complete",
+        "notes",
     ]
 
     __sort_fields__ = [
@@ -94,12 +102,9 @@ class TasksFilters(FilterModel):
         "reward",
         "complete",
         "notes",
-        
         "created_at",
         "updated_at",
     ]
 
     created_at: datetime | None
     updated_at: datetime | None
-
-

@@ -12,29 +12,28 @@ from lnbits.decorators import (
 from lnbits.helpers import generate_filter_params_openapi
 
 from .crud import (
-    create_tasks,
     create_scrum,
-    delete_tasks,
+    create_tasks,
     delete_scrum,
-    get_tasks_by_id,
-    get_tasks_paginated,
+    delete_tasks,
     get_scrum,
     get_scrum_by_id,
     get_scrum_ids_by_user,
     get_scrum_paginated,
-    update_tasks,
+    get_tasks_by_id,
+    get_tasks_paginated,
     update_scrum,
+    update_tasks,
 )
 from .models import (
-    Tasks,
-    TasksFilters,
-    CreateTasks,
-    TasksPublic,
     CreateScrum,
+    CreateTasks,
     Scrum,
     ScrumFilters,
+    Tasks,
+    TasksFilters,
+    TasksPublic,
 )
-from loguru import logger
 
 scrum_filters = parse_filters(ScrumFilters)
 tasks_filters = parse_filters(TasksFilters)
@@ -146,8 +145,6 @@ async def api_create_tasks(
     return tasks
 
 
-
-
 @scrum_api_router.put(
     "/api/v1/tasks/{tasks_id}",
     name="Update Tasks",
@@ -171,6 +168,7 @@ async def api_update_tasks(
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
     return tasks
 
+
 @scrum_api_router.put(
     "/api/v1/tasks/public/{tasks_id}",
     name="Update Tasks",
@@ -178,7 +176,7 @@ async def api_update_tasks(
     response_description="The updated tasks.",
     response_model=Tasks,
 )
-async def api_update_tasks(
+async def api_update_tasks_public(
     tasks_id: str,
     data: TasksPublic,
 ) -> Tasks:
@@ -189,17 +187,11 @@ async def api_update_tasks(
     scrum = await get_scrum_by_id(tasks.scrum_id)
     if not scrum:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
-    logger.debug(scrum.public_assigning)
-    logger.debug(data.assignee )
-    logger.debug(tasks.assignee)
-    if (
-        not scrum.public_assigning
-        and data.assignee is not None
-        and data.assignee != tasks.assignee
-    ):
+    if not scrum.public_assigning and data.assignee is not None and data.assignee != tasks.assignee:
         raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
     return tasks
+
 
 @scrum_api_router.get(
     "/api/v1/tasks/paginated",
@@ -271,5 +263,3 @@ async def api_delete_tasks(
 
     await delete_tasks(scrum.id, tasks_id)
     return SimpleStatus(success=True, message="Tasks Deleted")
-
-

@@ -59,6 +59,7 @@ class CreateTasks(BaseModel):
     assignee: str | None
     stage: TaskStage = TaskStage.todo
     reward: int | None
+    paid: bool = False
     complete: bool | None
     notes: str | None
 

@@ -258,11 +258,17 @@ window.app = Vue.createApp({
         )
         this.getTasks()
         this.tasksFormDialog.show = false
+        this.tasksFormDialog.data = {}
       } catch (error) {
         LNbits.utils.notifyApiError(error)
       }
     },
-
+    clearForm() {
+      this.tasksFormDialog.show = false
+      this.tasksFormDialog.data = {}
+      this.scrumFormDialog.show = false
+      this.scrumFormDialog.data = {}
+    },
     async getTasks(props) {
       try {
         this.tasksTable.loading = true

@@ -1,4 +1,8 @@
 {% extends "public.html" %} {% block page %}
+<div class="text-h6">
+  <span v-text="publicPageName"></span> -
+  <small><span v-text="publicPageDescription"></span></small>
+</div>
 <div class="row q-col-gutter-md justify-center items-stretch window-height">
   <div
     v-for="stage in stages"
@@ -42,8 +46,12 @@
             <div class="on-left text-caption text-grey">
               <span v-text="task.assignee"></span>
               <span
-                v-if="task.reward > 0"
+                v-if="task.reward > 0 && !task.complete"
                 v-text="' for ' + task.reward.toString() + 'sats reward'"
+              ></span>
+              <span
+                v-if="task.reward > 0 && task.complete"
+                v-text="' (' + task.reward.toString() + 'sats rewarded)'"
               ></span>
             </div>
             <q-btn
@@ -97,11 +105,14 @@
     public_page_tasks = {{ public_page_tasks | safe }}
     public_page_assigning = {{ public_page_assigning | tojson | safe }}
     scrum_id = '{{ scrum_id }}'
-
+    public_page_name = '{{ public_page_name }}'
+    public_page_description = '{{ public_page_description }}'
     window.app = Vue.createApp({
       mixins: [windowMixin],
       data() {
         return {
+          publicPageName: public_page_name,
+          publicPageDescription: public_page_description,
           scrumId: scrum_id,
           publicTasks: Array.isArray(public_page_tasks) ? public_page_tasks.filter(Boolean) : [],
           draggingTaskId: null,
@@ -165,20 +176,49 @@
       this.tasksFormDialog.show = true
     },
     subscribeToEvents(scrumId) {
-      try {
-        const url = new URL(window.location)
-        url.protocol = url.protocol === 'https:' ? 'wss' : 'ws'
-        url.pathname = `/api/v1/ws/${scrumId}`
-        const ws = new WebSocket(url)
-        ws.onmessage = async ({data}) => {
-          const task = JSON.parse(data)
-          this.publicTasks = this.publicTasks.map(t => t.id === task.id ? task : t)
+    try {
+      const url = new URL(window.location)
+      url.protocol = url.protocol === 'https:' ? 'wss' : 'ws'
+      url.pathname = `/api/v1/ws/${scrumId}`
+      const ws = new WebSocket(url)
+
+      ws.onmessage = ({ data }) => {
+        let msg
+        try {
+          msg = JSON.parse(data)
+        } catch (e) {
+          console.warn('WS non-JSON message:', data)
+          return
         }
-      } catch (err) {
-        console.warn(err)
-        LNbits.utils.notifyApiError(err)
+        if (Array.isArray(msg)) {
+          msg.forEach(m => this.upsertTask(m.task || m))
+        } else if (msg && msg.type && msg.task) {
+          if (msg.type === 'task.deleted') {
+            const i = this.publicTasks.findIndex(t => t.id === msg.task.id)
+            if (i !== -1) this.publicTasks.splice(i, 1)
+          } else {
+            this.upsertTask(msg.task)
+          }
+        } else {
+          this.upsertTask(msg)
+        }
       }
-    },
+
+      ws.onerror = err => console.warn('WS error', err)
+    } catch (err) {
+      console.warn(err)
+      LNbits.utils.notifyApiError(err)
+    }
+  },
+  upsertTask(task) {
+    if (!task || !task.id) return
+    const i = this.publicTasks.findIndex(t => t && t.id === task.id)
+    if (i === -1) {
+      this.publicTasks.push(task)
+    } else {
+      this.publicTasks.splice(i, 1, task)
+    }
+  },
   },
       mounted() {
         if (this.scrumId) {

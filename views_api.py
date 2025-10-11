@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from lnbits.core.models import SimpleStatus, User
-from lnbits.core.services import pay_invoice, websocket_updater
+from lnbits.core.services import get_pr_from_lnurl, pay_invoice, websocket_updater
 from lnbits.db import Filters, Page
 from lnbits.decorators import (
     check_user_exists,
@@ -28,7 +28,6 @@ from .crud import (
     update_scrum,
     update_tasks,
 )
-from .helpers import get_pr
 from .models import (
     CreateScrum,
     CreateTasks,
@@ -146,6 +145,7 @@ async def api_create_tasks(
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
 
     tasks = await create_tasks(data)
+    await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
     return tasks
 
 
@@ -169,8 +169,14 @@ async def api_update_tasks(
     if not scrum:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
     # If task is completed and has a reward, pay the reward
-    if data.complete and not tasks.paid and tasks.reward is not None and tasks.reward > 0:
-        pr = await get_pr(data.assignee, tasks.reward)
+    if data.complete and not tasks.paid and tasks.reward is not None and tasks.reward > 0 and tasks.assignee:
+        try:
+            pr = await get_pr_from_lnurl(tasks.assignee, tasks.reward * 1000)
+        except Exception as exc:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail=f"Error generating payment request from assignee LNURL. {exc!s}",
+            ) from exc
         if not pr:
             raise HTTPException(
                 status_code=HTTPStatus.BAD_REQUEST,
@@ -181,7 +187,8 @@ async def api_update_tasks(
                 wallet_id=scrum.wallet,
                 payment_request=pr,
                 max_sat=int(tasks.reward),
-                extra={"tag": "ScrumTask", "task_id": tasks_id},
+                description=f"Scrum task reward: {tasks.assignee} - {tasks.task}",
+                extra={"tag": "scrum", "task_id": tasks_id, "scrum_id": scrum.id},
             )
             data.paid = True
         except Exception as exc:
@@ -212,6 +219,7 @@ async def api_update_tasks_public(
     if not scrum.public_assigning and data.assignee is not None and data.assignee != tasks.assignee:
         raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
+    await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
     return tasks
 
 

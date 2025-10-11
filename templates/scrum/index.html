@@ -272,7 +272,6 @@
         dense
         v-model.trim="scrumFormDialog.data.name"
         label="Scrum Name"
-        hint="  (optional)"
       ></q-input>
 
       <q-input
@@ -280,7 +279,6 @@
         dense
         v-model.trim="scrumFormDialog.data.description"
         label="Scrum Description"
-        hint="Describe your task "
       ></q-input>
       <q-select
         filled
@@ -294,7 +292,6 @@
       <q-checkbox
         v-model="scrumFormDialog.data.public_assigning"
         label="Public Assigning (allow users to assign themselves tasks on public page)"
-        hint=""
       ></q-checkbox>
 
       <div class="row q-mt-lg">
@@ -302,7 +299,9 @@
           <span v-if="scrumFormDialog.data.id">Update</span>
           <span v-else>Create</span>
         </q-btn>
-        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+        <q-btn @click="clearForm" flat color="grey" class="q-ml-auto"
+          >Cancel</q-btn
+        >
       </div>
     </q-card>
   </q-dialog>
@@ -366,7 +365,9 @@
           <span v-if="tasksFormDialog.data.id">Update</span>
           <span v-else>Create</span>
         </q-btn>
-        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+        <q-btn @click="clearForm" flat color="grey" class="q-ml-auto"
+          >Cancel</q-btn
+        >
       </div>
     </q-card>
   </q-dialog>

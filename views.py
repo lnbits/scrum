@@ -55,5 +55,6 @@ async def scrum_public_page(req: Request, scrum_id: str):
             "public_page_name": public_page_name,
             "public_page_description": public_page_description,
             "public_page_tasks": public_page_tasks_json,
+            "public_page_assigning": scrum.public_assigning,
         },
     )

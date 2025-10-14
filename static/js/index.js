@@ -171,7 +171,8 @@ window.app = Vue.createApp({
       this.scrumFormDialog.data = {
         name: null,
         description: null,
-        public_assigning: false
+        public_assigning: false,
+        public_tasks: false
       }
       this.scrumFormDialog.show = true
     },
@@ -221,7 +222,7 @@ window.app = Vue.createApp({
           try {
             await LNbits.api.request(
               'DELETE',
-              '/scrum/api/v1/scrum/' + scrumId,
+              '/scrum/api/v1/scrum/' + scrumId + '?clear_tasks=true',
               null
             )
             await this.getScrum()

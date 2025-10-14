@@ -17,6 +17,7 @@ from lnbits.helpers import generate_filter_params_openapi
 from .crud import (
     create_scrum,
     create_tasks,
+    delete_all_tasks,
     delete_scrum,
     delete_tasks,
     get_scrum,
@@ -122,8 +123,7 @@ async def api_delete_scrum(
 
     await delete_scrum(user.id, scrum_id)
     if clear_tasks is True:
-        # await delete all tasks associated with this scrum
-        pass
+        await delete_all_tasks(scrum_id)
     return SimpleStatus(success=True, message="Scrum Deleted")
 
 

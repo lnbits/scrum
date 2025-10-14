@@ -175,3 +175,13 @@ async def delete_tasks(scrum_id: str, tasks_id: str) -> None:
         """,
         {"id": tasks_id, "scrum_id": scrum_id},
     )
+
+
+async def delete_all_tasks(scrum_id: str) -> None:
+    await db.execute(
+        """
+            DELETE FROM scrum.tasks
+            WHERE scrum_id = :scrum_id
+        """,
+        {"scrum_id": scrum_id},
+    )

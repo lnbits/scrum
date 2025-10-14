@@ -15,7 +15,8 @@ window.app = Vue.createApp({
           name: null,
           description: null,
           public_assigning: false,
-          public_tasks: false
+          public_tasks: false,
+          public_delete_tasks: false
         }
       },
       scrumList: [],
@@ -172,7 +173,8 @@ window.app = Vue.createApp({
         name: null,
         description: null,
         public_assigning: false,
-        public_tasks: false
+        public_tasks: false,
+        public_delete_tasks: false
       }
       this.scrumFormDialog.show = true
     },

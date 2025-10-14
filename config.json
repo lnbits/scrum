@@ -1,4 +1,5 @@
 {
+  "id": "scrum",
   "name": "Scrum",
   "short_description": "Scrum with paid tasks",
   "tile": "/scrum/static/image/scrum.png",

@@ -198,6 +198,28 @@ async def api_update_tasks(
     return tasks
 
 
+@scrum_api_router.post(
+    "/api/v1/tasks/public",
+    name="Create Public Tasks",
+    summary="Create new public tasks for the specified scrum.",
+    response_description="The created public tasks.",
+    response_model=Tasks,
+    status_code=HTTPStatus.CREATED,
+)
+async def api_create_public_tasks(
+    data: CreateTasks,
+) -> Tasks:
+    data.reward = 0
+    scrum = await get_scrum_by_id(data.scrum_id)
+    if not scrum:
+        raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
+    if not scrum.public_assigning:
+        raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
+    tasks = await create_tasks(data)
+    await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
+    return tasks
+
+
 @scrum_api_router.put(
     "/api/v1/tasks/public/{tasks_id}",
     name="Update Tasks",
@@ -216,7 +238,7 @@ async def api_update_tasks_public(
     scrum = await get_scrum_by_id(tasks.scrum_id)
     if not scrum:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
-    if not scrum.public_assigning and data.assignee is not None and data.assignee != tasks.assignee:
+    if not scrum.public_assigning:
         raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
     await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))

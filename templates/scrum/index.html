@@ -294,6 +294,11 @@
         label="Public Assigning (allow users to assign themselves tasks on public page)"
       ></q-checkbox>
 
+      <q-checkbox
+        v-model="scrumFormDialog.data.public_tasks"
+        label="Allow users to create tasks on the public page (with no reward)"
+      ></q-checkbox>
+
       <div class="row q-mt-lg">
         <q-btn @click="saveScrum" unelevated color="primary">
           <span v-if="scrumFormDialog.data.id">Update</span>

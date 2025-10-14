@@ -9,13 +9,13 @@ window.app = Vue.createApp({
         show: false,
         data: {}
       },
-
       scrumFormDialog: {
         show: false,
         data: {
           name: null,
           description: null,
-          public_assigning: false
+          public_assigning: false,
+          public_tasks: false
         }
       },
       scrumList: [],

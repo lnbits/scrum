@@ -13,7 +13,23 @@
   >
     <q-card class="full-height">
       <q-card-section>
-        <h6 class="q-mb-sm q-mt-none" v-text="stageLabels[stage]"></h6>
+        <div class="row">
+          <div class="col">
+            <h6 class="q-mb-sm q-mt-none" v-text="stageLabels[stage]"></h6>
+          </div>
+          <div class="col">
+            <q-btn
+              v-if="publicTasksCreation && stage === 'todo'"
+              dense
+              color="primary"
+              icon="add"
+              round
+              class="float-right"
+              @click="addTask()"
+            ></q-btn>
+          </div>
+        </div>
+
         <q-card
           class="my-card q-mb-md"
           v-for="task in tasksBy(stage)"
@@ -99,6 +115,47 @@
       </div>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="addTaskFormDialog.show" position="top">
+    <q-card
+      v-if="addTaskFormDialog.show"
+      class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
+    >
+      <q-input
+        v-if="publicAssigning"
+        filled
+        dense
+        v-model.trim="addTaskFormDialog.data.assignee"
+        label="Assignee"
+      ></q-input>
+      <q-input
+        filled
+        dense
+        v-model.trim="addTaskFormDialog.data.name"
+        label="Name"
+        hint="Task name"
+      ></q-input>
+
+      <q-input
+        filled
+        dense
+        v-model.trim="addTaskFormDialog.data.notes"
+        label="Notes"
+        type="textarea"
+        hint="Any useful notes"
+      ></q-input>
+
+      <div class="row q-mt-lg">
+        <q-btn
+          @click="createTask(addTaskFormDialog.data)"
+          label="Add"
+          unelevated
+          color="primary"
+        >
+        </q-btn>
+        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+      </div>
+    </q-card>
+  </q-dialog>
 </div>
 {% endblock %} {% block scripts %}
 <script>
@@ -107,6 +164,7 @@
     scrum_id = '{{ scrum_id }}'
     public_page_name = '{{ public_page_name }}'
     public_page_description = '{{ public_page_description }}'
+    public_page_tasks_creation = {{ public_page_tasks_creation | tojson | safe }}
     window.app = Vue.createApp({
       mixins: [windowMixin],
       data() {
@@ -119,7 +177,9 @@
           stages: ['todo','doing','done'],
           stageLabels: { todo: 'To do', doing: 'Doing', done: 'Done' },
           tasksFormDialog: { show: false, data: {} },
-          publicAssigning: public_page_assigning
+          addTaskFormDialog: { show: false, data: {} },
+          publicAssigning: public_page_assigning,
+          publicTasksCreation: public_page_tasks_creation
         }
       },
       methods: {
@@ -157,7 +217,22 @@
         LNbits.utils.notifyApiError(e)
       }
     },
-
+    async createTask(task) {
+      try {
+        const newTask = await LNbits.api.request(
+          'POST',
+          `/scrum/api/v1/tasks/public`,
+          null,
+          { task: task.name, notes: task.notes, scrum_id: this.scrumId, stage: 'todo', assignee: task.assignee, complete: false }
+        )
+        this.publicTasks.push(newTask)
+        this.addTaskFormDialog.show = false
+        this.addTaskFormDialog.data = {}
+        this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task added' })
+      } catch (e) {
+        LNbits.utils.notifyApiError(e)
+      }
+    },
     async updateTask(task) {
       await LNbits.api.request(
         'PUT',
@@ -174,6 +249,10 @@
     editTask(t) {
       this.tasksFormDialog.data = { ...t }
       this.tasksFormDialog.show = true
+    },
+    addTask() {
+      this.addTaskFormDialog.data = { }
+      this.addTaskFormDialog.show = true
     },
     subscribeToEvents(scrumId) {
     try {

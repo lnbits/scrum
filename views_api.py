@@ -238,7 +238,7 @@ async def api_update_tasks_public(
     scrum = await get_scrum_by_id(tasks.scrum_id)
     if not scrum:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
-    if not scrum.public_assigning:
+    if not scrum.public_assigning and data.assignee is not None and data.assignee != tasks.assignee:
         raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
     await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))

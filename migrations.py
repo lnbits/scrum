@@ -50,7 +50,7 @@ async def m003_tasks(db):
     )
 
 
-async def m003_add_public_tasks(db):
+async def m004_add_public_tasks(db):
     """
     Add public tasks to scrum.scrum table
     """

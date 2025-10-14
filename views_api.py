@@ -129,6 +129,7 @@ async def api_delete_scrum(
 
 ############################# Tasks #############################
 
+
 @scrum_api_router.post(
     "/api/v1/tasks",
     name="Create Tasks",
@@ -270,7 +271,9 @@ async def api_delete_tasks(
     await delete_tasks(scrum.id, tasks_id)
     return SimpleStatus(success=True, message="Tasks Deleted")
 
+
 ####################### Public Tasks #############################
+
 
 @scrum_api_router.post(
     "/api/v1/tasks/public",
@@ -317,6 +320,7 @@ async def api_update_tasks_public(
     tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
     await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
     return tasks
+
 
 @scrum_api_router.delete(
     "/api/v1/tasks/public/{tasks_id}",

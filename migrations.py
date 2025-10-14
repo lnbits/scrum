@@ -60,6 +60,7 @@ async def m004_add_public_tasks(db):
     """
     )
 
+
 async def m005_add_public_delete_tasks(db):
     """
     Add public delete tasks to scrum.scrum table

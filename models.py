@@ -17,6 +17,7 @@ class CreateScrum(BaseModel):
     description: str
     public_assigning: bool
     public_tasks: bool = False
+    public_delete_tasks: bool = False
     wallet: str
 
 
@@ -27,6 +28,7 @@ class Scrum(BaseModel):
     description: str
     public_assigning: bool
     public_tasks: bool = False
+    public_delete_tasks: bool = False
     wallet: str
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

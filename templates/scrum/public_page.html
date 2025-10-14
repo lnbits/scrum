@@ -67,6 +67,13 @@
                   ></span>
                 </div>
                 <q-btn
+                  v-if="publicTasksDeletion"
+                  flat
+                  @click="deleteTasks(task.id)"
+                  icon="delete"
+                  color="red"
+                ></q-btn>
+                <q-btn
                   flat
                   @click="editTask(task)"
                   icon="edit"
@@ -163,6 +170,7 @@
     public_page_name = '{{ public_page_name }}'
     public_page_description = '{{ public_page_description }}'
     public_page_tasks_creation = {{ public_page_tasks_creation | tojson | safe }}
+    public_page_delete_tasks = {{ public_page_delete_tasks | tojson | safe }}
     window.app = Vue.createApp({
       mixins: [windowMixin],
       data() {
@@ -177,7 +185,8 @@
           tasksFormDialog: { show: false, data: {} },
           addTaskFormDialog: { show: false, data: {} },
           publicAssigning: public_page_assigning,
-          publicTasksCreation: public_page_tasks_creation
+          publicTasksCreation: public_page_tasks_creation,
+          publicTasksDeletion: public_page_delete_tasks
         }
       },
       methods: {
@@ -243,6 +252,24 @@
       this.tasksFormDialog.show = false
       this.tasksFormDialog.data = {}
       this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task updated' })
+    },
+    async deleteTasks(tasksId) {
+      await LNbits.utils
+        .confirmDialog('Are you sure you want to delete this Tasks?')
+        .onOk(async () => {
+          try {
+            await LNbits.api.request(
+              'DELETE',
+              '/scrum/api/v1/tasks/public/' + tasksId,
+              null
+            )
+            const i = this.publicTasks.findIndex(t => t.id === tasksId)
+            if (i !== -1) this.publicTasks.splice(i, 1)
+            this.$q && this.$q.notify && this.$q.notify({ type: 'positive', message: 'Task deleted' })
+          } catch (error) {
+            LNbits.utils.notifyApiError(error)
+          }
+        })
     },
     editTask(t) {
       this.tasksFormDialog.data = { ...t }

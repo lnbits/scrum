@@ -59,3 +59,13 @@ async def m004_add_public_tasks(db):
         ALTER TABLE scrum.scrum ADD public_tasks BOOLEAN DEFAULT false;
     """
     )
+
+async def m005_add_public_delete_tasks(db):
+    """
+    Add public delete tasks to scrum.scrum table
+    """
+    await db.execute(
+        """
+        ALTER TABLE scrum.scrum ADD public_delete_tasks BOOLEAN DEFAULT false;
+    """
+    )

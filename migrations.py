@@ -54,4 +54,8 @@ async def m003_add_public_tasks(db):
     """
     Add public tasks to scrum.scrum table
     """
-    await db.execute("ALTER TABLE scrum.scrum ADD COLUMN public_tasks BOOLEAN DEFAULT FALSE;")
+    await db.execute(
+        """
+        ALTER TABLE scrum.scrum ADD public_tasks BOOLEAN DEFAULT false;
+    """
+    )

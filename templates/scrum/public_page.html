@@ -11,6 +11,7 @@
     @dragover.prevent
     @drop="handleDrop(stage)"
   >
+
     <q-card class="full-height">
       <q-card-section>
         <div class="row">
@@ -29,20 +30,29 @@
             ></q-btn>
           </div>
         </div>
-
+      <q-list 
+      bordered 
+      class="rounded-borders"
+      v-for="task in tasksBy(stage)"
+      :key="task.id"
+      :draggable="canDrag(task)"
+      @dragstart="onDragStart($event, task)"
+      >
+      <q-expansion-item
+        class="q-mb-md"
+        expand-separator
+        :label="task.task"
+        :icon="task.complete ? 'check_circle' : ''"
+        switch-toggle-side
+      >
         <q-card
-          class="my-card q-mb-md"
-          v-for="task in tasksBy(stage)"
-          :key="task.id"
+          class="my-card"
           flat
           bordered
-          :draggable="canDrag(task)"
-          @dragstart="onDragStart($event, task)"
         >
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
               <div class="row items-center">
-                <div class="text-h6 q-mt-sm q-mb-xs" v-text="task.task"></div>
                 <q-icon
                   v-if="task.complete"
                   class="q-pl-md"
@@ -78,6 +88,8 @@
             ></q-btn>
           </q-card-actions>
         </q-card>
+        </q-expansion-item>
+      </q-list>
       </q-card-section>
     </q-card>
   </div>
@@ -131,7 +143,7 @@
         filled
         dense
         v-model.trim="addTaskFormDialog.data.name"
-        label="Name"
+        label="Task"
         hint="Task name"
       ></q-input>
 

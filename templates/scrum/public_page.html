@@ -29,60 +29,70 @@
             ></q-btn>
           </div>
         </div>
-        <q-list
+        <q-card
+          class="my-card q-mb-sm"
+          flat
           bordered
-          class="rounded-borders q-mb-md"
           v-for="task in tasksBy(stage)"
           :key="task.id"
           :draggable="canDrag(task)"
           @dragstart="onDragStart($event, task)"
         >
-          <q-expansion-item
-            expand-separator
-            :label="task.task"
-            :icon="task.complete ? 'check_circle' : ''"
-            switch-toggle-side
-          >
-            <q-card class="my-card" flat bordered>
-              <q-card-section horizontal>
-                <q-card-section class="q-pt-xs">
-                  <div
-                    class="text-caption text-grey"
-                    v-if="task.notes"
-                    v-text="task.notes"
-                    style="white-space: pre-line"
-                  ></div>
-                </q-card-section>
-              </q-card-section>
-              <q-card-actions align="right">
-                <div class="on-left text-caption text-grey">
-                  <span v-text="task.assignee"></span>
-                  <span
-                    v-if="task.reward > 0 && !task.complete"
-                    v-text="' for ' + task.reward.toString() + 'sats reward'"
-                  ></span>
-                  <span
-                    v-if="task.reward > 0 && task.complete"
-                    v-text="' (' + task.reward.toString() + 'sats rewarded)'"
-                  ></span>
-                </div>
-                <q-btn
-                  v-if="publicTasksDeletion"
-                  flat
-                  @click="deleteTasks(task.id)"
-                  icon="delete"
-                  color="red"
-                ></q-btn>
-                <q-btn
-                  flat
-                  @click="editTask(task)"
-                  icon="edit"
-                  color="light-blue"
-                ></q-btn>
-              </q-card-actions>
-            </q-card>
-          </q-expansion-item>
-        </q-list>
+          <q-card-section class="row">
+            <div class="col" v-text="task.task"></div>
+            <q-icon
+              v-if="task.complete"
+              name="check_circle"
+              color="green"
+            ></q-icon>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <div
+              class="text-caption text-grey"
+              v-if="task.notes"
+              v-text="task.notes"
+              style="white-space: pre-line"
+            ></div>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-badge
+              outline
+              color="blue"
+              class="q-mr-sm"
+              :label="task.assignee"
+            ></q-badge>
+            <q-badge
+              outline
+              color="orange"
+              v-if="task.reward > 0 && !task.complete"
+              :label="task.reward.toString() + 'sats reward'"
+            ></q-badge>
+            <q-badge
+              outline
+              color="green"
+              v-if="task.reward > 0 && task.complete"
+              :label="task.reward.toString() + 'sats rewarded'"
+            ></q-badge>
+
+            <q-btn
+              v-if="publicTasksDeletion"
+              flat
+              @click="deleteTasks(task.id)"
+              icon="delete"
+              color="red"
+              size="sm"
+            ></q-btn>
+            <q-btn
+              flat
+              @click="editTask(task)"
+              icon="edit"
+              color="light-blue"
+              size="sm"
+            ></q-btn>
+          </q-card-actions>
+        </q-card>
       </q-card-section>
     </q-card>
   </div>

@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse
 from lnbits.core.models import User
 from lnbits.decorators import check_user_exists
 from lnbits.helpers import template_renderer
+from lnbits.settings import settings
 
 from .crud import get_scrum_by_id, get_tasks_paginated
 
@@ -58,5 +59,43 @@ async def scrum_public_page(req: Request, scrum_id: str):
             "public_page_assigning": scrum.public_assigning,
             "public_page_tasks_creation": scrum.public_tasks,
             "public_page_delete_tasks": scrum.public_delete_tasks,
+            "web_manifest": f"/scrum/manifest/{scrum_id}.webmanifest",
         },
     )
+
+
+@scrum_generic_router.get("/manifest/{scrum_id}.webmanifest")
+async def manifest(scrum_id: str):
+    scrum = await get_scrum_by_id(scrum_id)
+    if not scrum:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Scrum does not exist.")
+
+    return {
+        "short_name": "Scrum " + scrum.name,
+        "name": "Scrum " + scrum.name + " - " + scrum.description,
+        "icons": [
+            {
+                "src": (
+                    settings.lnbits_custom_logo
+                    if settings.lnbits_custom_logo
+                    else "https://cdn.jsdelivr.net/gh/lnbits/lnbits@0.3.0/docs/logos/lnbits.png"
+                ),
+                "type": "image/png",
+                "sizes": "900x900",
+            }
+        ],
+        "start_url": "/scrum/" + scrum_id,
+        "background_color": "#1F2234",
+        "description": "Bitcoin Lightning Scrum",
+        "display": "standalone",
+        "scope": "/scrum/" + scrum_id,
+        "theme_color": "#1F2234",
+        "shortcuts": [
+            {
+                "name": "Scrum " + scrum.name + " - " + settings.lnbits_site_title,
+                "short_name": "Scrum " + scrum.name,
+                "description": "Scrum " + scrum.description + " - " + settings.lnbits_site_title,
+                "url": "/scrum/" + scrum_id,
+            }
+        ],
+    }

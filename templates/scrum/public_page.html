@@ -1,177 +1,192 @@
-{% extends "public.html" %} {% block page %}
+{% extends "public.html" %} {% block toolbar_title %}
 <div class="text-h6">
   <span v-text="publicPageName"></span> -
   <small><span v-text="publicPageDescription"></span></small>
 </div>
-<div class="row q-col-gutter-md justify-center items-stretch window-height">
-  <div
-    v-for="stage in stages"
-    :key="stage"
-    class="col-12 col-sm-4 col-md-4 col-lg-4 q-gutter-y-md column justify-between full-height"
-    @dragover.prevent
-    @drop="handleDrop(stage)"
-  >
-    <q-card class="full-height">
-      <q-card-section>
-        <div class="row">
-          <div class="col">
-            <h6 class="q-mb-sm q-mt-none" v-text="stageLabels[stage]"></h6>
-          </div>
-          <div class="col">
-            <q-btn
-              v-if="publicTasksCreation && stage === 'todo'"
-              dense
-              color="primary"
-              icon="add"
-              round
-              class="float-right"
-              @click="addTask()"
-            ></q-btn>
-          </div>
-        </div>
-        <q-card
-          class="my-card q-mb-sm"
-          flat
-          bordered
-          v-for="task in tasksBy(stage)"
-          :key="task.id"
-          :draggable="canDrag(task)"
-          @dragstart="onDragStart($event, task)"
-        >
-          <q-card-section class="row">
-            <div class="col" v-text="task.task"></div>
-            <q-icon
-              v-if="task.complete"
-              name="check_circle"
-              color="green"
-            ></q-icon>
+{% endblock %} {% block footer %}{% endblock %} {% block page_container %}
+<q-page-container>
+  <q-page>
+    <div class="row q-col-gutter-md justify-center items-stretch window-height">
+      <div
+        v-for="stage in stages"
+        :key="stage"
+        class="col-12 col-sm-4 col-md-4 col-lg-4 q-gutter-y-md column justify-between full-height"
+        @dragover.prevent
+        @drop="handleDrop(stage)"
+      >
+        <q-card class="full-height">
+          <q-card-section class="q-pt-xs q-pb-xs">
+            <q-item>
+              <div class="col">
+                <h6 class="q-mb-sm q-mt-none" v-text="stageLabels[stage]"></h6>
+              </div>
+              <div class="col">
+                <q-btn
+                  v-if="publicTasksCreation && stage === 'todo'"
+                  dense
+                  color="primary"
+                  icon="add"
+                  round
+                  class="float-right"
+                  @click="addTask()"
+                ></q-btn>
+              </div>
+            </q-item>
           </q-card-section>
+          <q-separator></q-separator>
+          <q-scroll-area style="height: 90%; max-width: 100%">
+            <q-card-section>
+              <q-card
+                class="my-card q-mb-sm"
+                flat
+                bordered
+                v-for="task in tasksBy(stage)"
+                :key="task.id"
+                :draggable="canDrag(task)"
+                @dragstart="onDragStart($event, task)"
+              >
+                <q-card-section class="row q-pb-xs">
+                  <div class="col" v-text="task.task"></div>
+                  <q-icon
+                    v-if="task.complete"
+                    name="check_circle"
+                    color="green"
+                  ></q-icon>
+                </q-card-section>
 
-          <q-card-section class="q-pt-none">
-            <div
-              class="text-caption text-grey"
-              v-if="task.notes"
-              v-text="task.notes"
-              style="white-space: pre-line"
-            ></div>
-          </q-card-section>
+                <q-card-section class="q-pt-none q-pb-none">
+                  <div
+                    class="text-caption text-grey"
+                    v-if="task.notes"
+                    v-text="task.notes"
+                    style="white-space: pre-line"
+                  ></div>
+                </q-card-section>
 
-          <q-card-actions align="right">
-            <q-badge
-              outline
-              color="blue"
-              class="q-mr-sm"
-              :label="task.assignee"
-            ></q-badge>
-            <q-badge
-              outline
-              color="orange"
-              v-if="task.reward > 0 && !task.complete"
-              :label="task.reward.toString() + 'sats reward'"
-            ></q-badge>
-            <q-badge
-              outline
-              color="green"
-              v-if="task.reward > 0 && task.complete"
-              :label="task.reward.toString() + 'sats rewarded'"
-            ></q-badge>
+                <q-card-actions align="right">
+                  <q-badge
+                    outline
+                    color="blue"
+                    class="q-mr-sm"
+                    v-if="task.assignee"
+                    :label="task.assignee"
+                  ></q-badge>
+                  <q-badge
+                    outline
+                    color="orange"
+                    v-if="task.reward > 0 && !task.complete"
+                    :label="task.reward.toString() + 'sats reward'"
+                  ></q-badge>
+                  <q-badge
+                    outline
+                    color="green"
+                    v-if="task.reward > 0 && task.complete"
+                    :label="task.reward.toString() + 'sats rewarded'"
+                  ></q-badge>
 
-            <q-btn
-              v-if="publicTasksDeletion"
-              flat
-              @click="deleteTasks(task.id)"
-              icon="delete"
-              color="red"
-              size="sm"
-            ></q-btn>
-            <q-btn
-              flat
-              @click="editTask(task)"
-              icon="edit"
-              color="light-blue"
-              size="sm"
-            ></q-btn>
-          </q-card-actions>
+                  <q-btn
+                    v-if="publicTasksDeletion"
+                    flat
+                    @click="deleteTasks(task.id)"
+                    icon="delete"
+                    color="red"
+                    size="sm"
+                  ></q-btn>
+                  <q-btn
+                    flat
+                    @click="editTask(task)"
+                    icon="edit"
+                    color="light-blue"
+                    size="sm"
+                  ></q-btn>
+                </q-card-actions>
+              </q-card>
+            </q-card-section>
+          </q-scroll-area>
         </q-card>
-      </q-card-section>
-    </q-card>
-  </div>
-  <q-dialog v-model="tasksFormDialog.show" position="top">
-    <q-card
-      v-if="tasksFormDialog.show"
-      class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
-    >
-      <q-input
-        v-if="publicAssigning"
-        filled
-        dense
-        v-model.trim="tasksFormDialog.data.assignee"
-        label="Assignee (LNaddress if task has paid reward)"
-      ></q-input>
-
-      <q-input
-        filled
-        dense
-        v-model.trim="tasksFormDialog.data.notes"
-        label="Notes"
-        type="textarea"
-        hint="Any useful notes"
-      ></q-input>
-
-      <div class="row q-mt-lg">
-        <q-btn
-          @click="updateTask(tasksFormDialog.data)"
-          label="Update"
-          unelevated
-          color="primary"
-        >
-        </q-btn>
-        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
       </div>
-    </q-card>
-  </q-dialog>
-  <q-dialog v-model="addTaskFormDialog.show" position="top">
-    <q-card
-      v-if="addTaskFormDialog.show"
-      class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
-    >
-      <q-input
-        v-if="publicAssigning"
-        filled
-        dense
-        v-model.trim="addTaskFormDialog.data.assignee"
-        label="Assignee"
-      ></q-input>
-      <q-input
-        filled
-        dense
-        v-model.trim="addTaskFormDialog.data.name"
-        label="Task"
-        hint="Task name"
-      ></q-input>
-
-      <q-input
-        filled
-        dense
-        v-model.trim="addTaskFormDialog.data.notes"
-        label="Notes"
-        type="textarea"
-        hint="Any useful notes"
-      ></q-input>
-
-      <div class="row q-mt-lg">
-        <q-btn
-          @click="createTask(addTaskFormDialog.data)"
-          label="Add"
-          unelevated
-          color="primary"
+      <q-dialog v-model="tasksFormDialog.show" position="top">
+        <q-card
+          v-if="tasksFormDialog.show"
+          class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
         >
-        </q-btn>
-        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
-      </div>
-    </q-card>
-  </q-dialog>
-</div>
+          <q-input
+            v-if="publicAssigning"
+            filled
+            dense
+            v-model.trim="tasksFormDialog.data.assignee"
+            label="Assignee (LNaddress if task has paid reward)"
+          ></q-input>
+
+          <q-input
+            filled
+            dense
+            v-model.trim="tasksFormDialog.data.notes"
+            label="Notes"
+            type="textarea"
+            hint="Any useful notes"
+          ></q-input>
+
+          <div class="row q-mt-lg">
+            <q-btn
+              @click="updateTask(tasksFormDialog.data)"
+              label="Update"
+              unelevated
+              color="primary"
+            >
+            </q-btn>
+            <q-btn v-close-popup flat color="grey" class="q-ml-auto"
+              >Cancel</q-btn
+            >
+          </div>
+        </q-card>
+      </q-dialog>
+      <q-dialog v-model="addTaskFormDialog.show" position="top">
+        <q-card
+          v-if="addTaskFormDialog.show"
+          class="q-pa-lg q-pt-md lnbits__dialog-card q-col-gutter-md"
+        >
+          <q-input
+            v-if="publicAssigning"
+            filled
+            dense
+            v-model.trim="addTaskFormDialog.data.assignee"
+            label="Assignee"
+          ></q-input>
+          <q-input
+            filled
+            dense
+            v-model.trim="addTaskFormDialog.data.name"
+            label="Task"
+            hint="Task name"
+          ></q-input>
+
+          <q-input
+            filled
+            dense
+            v-model.trim="addTaskFormDialog.data.notes"
+            label="Notes"
+            type="textarea"
+            hint="Any useful notes"
+          ></q-input>
+
+          <div class="row q-mt-lg">
+            <q-btn
+              @click="createTask(addTaskFormDialog.data)"
+              label="Add"
+              unelevated
+              color="primary"
+            >
+            </q-btn>
+            <q-btn v-close-popup flat color="grey" class="q-ml-auto"
+              >Cancel</q-btn
+            >
+          </div>
+        </q-card>
+      </q-dialog>
+    </div>
+  </q-page>
+</q-page-container>
 {% endblock %} {% block scripts %}
 <script>
     public_page_tasks = {{ public_page_tasks | safe }}

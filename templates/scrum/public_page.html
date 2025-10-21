@@ -1,9 +1,6 @@
-{% extends "public.html" %} {% block toolbar_title %}
-<div class="text-h6">
-  <span v-text="publicPageName"></span> -
-  <small><span v-text="publicPageDescription"></span></small>
-</div>
-{% endblock %} {% block footer %}{% endblock %} {% block page_container %}
+{% extends "public.html" %} {% block title %} {{public_page_name}} -
+{{public_page_description}} {% endblock %} {% block footer %}{% endblock %} {%
+block page_container %}
 <q-page-container>
   <q-page>
     <div class="row q-col-gutter-md justify-center items-stretch window-height">
@@ -193,11 +190,14 @@
     </div>
   </q-page>
 </q-page-container>
-
-<!-- tiny helper so the flex child can shrink/fit -->
+{% endblock %} {% block styles %}
 <style>
   .kanban-card {
     min-height: 0;
+  }
+  .q-header,
+  .q-footer {
+    display: none;
   }
 </style>
 {% endblock %} {% block scripts %}

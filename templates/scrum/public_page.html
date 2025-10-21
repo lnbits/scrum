@@ -14,11 +14,15 @@
         @dragover.prevent
         @drop="handleDrop(stage)"
       >
-        <q-card class="full-height">
-          <q-card-section class="q-pt-xs q-pb-xs">
-            <q-item>
+        <!-- changed: flex column + no-wrap + kanban-card -->
+        <q-card class="full-height column no-wrap kanban-card">
+          <q-card-section class="q-pt-sm q-pb-none">
+            <q-item class="q-pt-none q-pb-none">
               <div class="col">
-                <h6 class="q-mb-sm q-mt-none" v-text="stageLabels[stage]"></h6>
+                <h6
+                  class="q-mb-none q-mt-none q-pb-none"
+                  v-text="stageLabels[stage]"
+                ></h6>
               </div>
               <div class="col">
                 <q-btn
@@ -34,7 +38,9 @@
             </q-item>
           </q-card-section>
           <q-separator></q-separator>
-          <q-scroll-area style="height: 90%; max-width: 100%">
+
+          <!-- changed: let it flex instead of fixed height -->
+          <q-scroll-area class="col" style="max-width: 100%">
             <q-card-section>
               <q-card
                 class="my-card q-mb-sm"
@@ -187,6 +193,13 @@
     </div>
   </q-page>
 </q-page-container>
+
+<!-- tiny helper so the flex child can shrink/fit -->
+<style>
+  .kanban-card {
+    min-height: 0;
+  }
+</style>
 {% endblock %} {% block scripts %}
 <script>
     public_page_tasks = {{ public_page_tasks | safe }}

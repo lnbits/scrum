@@ -120,10 +120,12 @@ async def api_delete_scrum(
     clear_tasks: bool | None = False,
     user: User = Depends(check_user_exists),
 ) -> SimpleStatus:
-
-    await delete_scrum(user.id, scrum_id)
+    scrum = await get_scrum(user.id, scrum_id)
+    if not scrum:
+        raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
+    await delete_scrum(user.id, scrum.id)
     if clear_tasks is True:
-        await delete_all_tasks(scrum_id)
+        await delete_all_tasks(scrum.id)
     return SimpleStatus(success=True, message="Scrum Deleted")
 
 

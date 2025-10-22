@@ -1,4 +1,3 @@
-import asyncio
 
 from fastapi import APIRouter
 
@@ -17,9 +16,6 @@ scrum_static_files = [
         "name": "scrum_static",
     }
 ]
-
-scheduled_tasks: list[asyncio.Task] = []
-
 
 __all__ = [
     "db",

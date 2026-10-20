@@ -30,7 +30,7 @@ def scrum_renderer():
 
 @scrum_generic_router.get("/", response_class=HTMLResponse)
 async def index(req: Request, user: User = Depends(check_user_exists)):
-    return scrum_renderer().TemplateResponse("scrum/index.html", {"request": req, "user": user.json()})
+    return scrum_renderer().TemplateResponse("scrum/index.html", {"request": req, "user": user.model_dump_json()})
 
 
 # Frontend shareable page

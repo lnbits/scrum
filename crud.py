@@ -18,7 +18,7 @@ db = Database("ext_scrum")
 
 ########################### Scrum ############################
 async def create_scrum(user_id: str, data: CreateScrum) -> Scrum:
-    scrum = Scrum(**data.dict(), id=urlsafe_short_hash(), user_id=user_id)
+    scrum = Scrum(**data.model_dump(), id=urlsafe_short_hash(), user_id=user_id)
     await db.insert("scrum.scrum", scrum)
     return scrum
 
@@ -102,7 +102,7 @@ async def delete_scrum(user_id: str, scrum_id: str) -> None:
 
 
 async def create_tasks(data: CreateTasks) -> Tasks:
-    tasks = Tasks(**data.dict(), id=urlsafe_short_hash())
+    tasks = Tasks(**data.model_dump(), id=urlsafe_short_hash())
     await db.insert("scrum.tasks", tasks)
     return tasks
 

@@ -50,8 +50,8 @@ class ScrumFilters(FilterModel):
         "updated_at",
     ]
 
-    created_at: datetime | None
-    updated_at: datetime | None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
 
 ################################# Tasks ###########################
@@ -60,30 +60,30 @@ class ScrumFilters(FilterModel):
 class CreateTasks(BaseModel):
     task: str
     scrum_id: str
-    assignee: str | None
+    assignee: str | None = None
     stage: TaskStage = TaskStage.todo
-    reward: int | None
+    reward: int | None = None
     paid: bool = False
-    complete: bool | None
-    notes: str | None
+    complete: bool | None = None
+    notes: str | None = None
 
 
 class TasksPublic(BaseModel):
-    assignee: str | None
+    assignee: str | None = None
     stage: TaskStage = TaskStage.todo
-    notes: str | None
+    notes: str | None = None
 
 
 class Tasks(BaseModel):
     id: str
     task: str
     scrum_id: str
-    assignee: str | None
+    assignee: str | None = None
     stage: TaskStage
-    reward: int | None
+    reward: int | None = None
     paid: bool = False
     complete: bool = False
-    notes: str | None
+    notes: str | None = None
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -112,5 +112,5 @@ class TasksFilters(FilterModel):
         "updated_at",
     ]
 
-    created_at: datetime | None
-    updated_at: datetime | None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None

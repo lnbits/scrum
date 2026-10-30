@@ -66,7 +66,7 @@ async def api_update_scrum(
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
     if scrum.user_id != user.id:
         raise HTTPException(HTTPStatus.FORBIDDEN, "You do not own this scrum.")
-    scrum = await update_scrum(Scrum(**{**scrum.dict(), **data.dict()}))
+    scrum = await update_scrum(Scrum(**{**scrum.model_dump(), **data.model_dump()}))
     return scrum
 
 
@@ -197,7 +197,7 @@ async def api_update_tasks(
             data.paid = True
         except Exception as exc:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Scrum payment failed. {exc!s}") from exc
-    tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
+    tasks = await update_tasks(Tasks(**{**tasks.model_dump(), **data.model_dump()}))
     await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
     return tasks
 
@@ -319,7 +319,7 @@ async def api_update_tasks_public(
         raise HTTPException(HTTPStatus.NOT_FOUND, "Scrum not found.")
     if not scrum.public_assigning and data.assignee is not None and data.assignee != tasks.assignee:
         raise HTTPException(HTTPStatus.FORBIDDEN, "You cant edit the assignee.")
-    tasks = await update_tasks(Tasks(**{**tasks.dict(), **data.dict()}))
+    tasks = await update_tasks(Tasks(**{**tasks.model_dump(), **data.model_dump()}))
     await websocket_updater(scrum.id, str(json.dumps(jsonable_encoder(tasks))))
     return tasks
 

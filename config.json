@@ -3,7 +3,7 @@
   "name": "Scrum",
   "short_description": "Scrum with paid tasks",
   "tile": "/scrum/static/image/scrum.png",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "min_lnbits_version": "1.7.0-rc1",
   "contributors": [
     {
